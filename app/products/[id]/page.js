@@ -65,7 +65,28 @@ export default function ProductDetailPage() {
 
                 {/* Right: Product Info */}
                 <div>
+                  {/* Brand sticker */}
+                  {product.brand && (
+                    <div style={{ marginBottom: '16px' }}>
+                      <span style={{
+                        background: product.brandColor || '#000',
+                        color: product.brandTextColor || '#fff',
+                        padding: '5px 14px', borderRadius: '999px',
+                        fontSize: '0.8rem', fontWeight: 800,
+                        letterSpacing: '0.06em', textTransform: 'uppercase',
+                        fontFamily: 'Prompt, sans-serif',
+                      }}>
+                        {product.brand}
+                      </span>
+                    </div>
+                  )}
+
                   <h1 className="product-detail-title font-display">{product.name}</h1>
+                  {product.code && (
+                    <p style={{ fontSize: '0.8rem', color: 'var(--fg-muted)', marginBottom: '8px', fontFamily: 'Prompt, sans-serif' }}>
+                      รหัสสินค้า: <strong>{product.code}</strong>
+                    </p>
+                  )}
                   <p className="product-detail-price">฿{Number(product.price).toLocaleString()}</p>
 
                   <hr className="product-detail-divider" />
@@ -76,19 +97,25 @@ export default function ProductDetailPage() {
 
                   <hr className="product-detail-divider" />
 
-                  {/* Contact CTA */}
+                  {/* Contact CTA — Instagram */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--fg-muted)', letterSpacing: '0.05em' }}>
-                      สั่งซื้อผ่านช่องทางด้านล่าง
+                    <p style={{ fontSize: '0.8rem', color: 'var(--fg-muted)', fontFamily: 'Prompt, sans-serif' }}>
+                      📩 สนใจสินค้าชิ้นนี้? DM มาได้เลย!
                     </p>
                     <a
-                      id="contact-line"
-                      href="https://line.me"
+                      id="contact-ig"
+                      href={`https://www.instagram.com/sell_second_hand_clothes.th`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn btn-primary btn-lg btn-full"
+                      style={{ gap: '10px', fontFamily: 'Prompt, sans-serif' }}
                     >
-                      สั่งซื้อผ่าน LINE
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                        <circle cx="12" cy="12" r="4"/>
+                        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" strokeWidth="0"/>
+                      </svg>
+                      DM สั่งซื้อผ่าน Instagram
                     </a>
                     <Link href="/" className="btn btn-ghost btn-full">
                       ← ดูสินค้าอื่น

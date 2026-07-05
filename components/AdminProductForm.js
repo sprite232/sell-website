@@ -1,14 +1,36 @@
 'use client';
 import { useState, useRef } from 'react';
 
+// Predefined brand colors for stickers
+const BRAND_COLORS = [
+  { label: 'Nike', color: '#000000', text: '#ffffff' },
+  { label: 'Adidas', color: '#000000', text: '#ffffff' },
+  { label: 'Uniqlo', color: '#e60012', text: '#ffffff' },
+  { label: 'Zara', color: '#1a1a1a', text: '#ffffff' },
+  { label: 'H&M', color: '#e50010', text: '#ffffff' },
+  { label: 'Champion', color: '#003087', text: '#ffffff' },
+  { label: 'Polo', color: '#1b3a6b', text: '#ffffff' },
+  { label: 'Levi\'s', color: '#c8102e', text: '#ffffff' },
+  { label: 'Supreme', color: '#ff0000', text: '#ffffff' },
+  { label: 'Off-White', color: '#f5f5f5', text: '#000000' },
+  { label: 'No brand', color: '#888888', text: '#ffffff' },
+];
+
 export default function AdminProductForm({ initialData = {}, onSubmit, submitting }) {
   const [name, setName] = useState(initialData.name || '');
   const [price, setPrice] = useState(initialData.price || '');
   const [description, setDescription] = useState(initialData.description || '');
+  const [brand, setBrand] = useState(initialData.brand || '');
+  const [brandColor, setBrandColor] = useState(initialData.brandColor || '#000000');
+  const [brandTextColor, setBrandTextColor] = useState(initialData.brandTextColor || '#ffffff');
   const [existingImages, setExistingImages] = useState(initialData.images || []);
   const [newFiles, setNewFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [dragging, setDragging] = useState(false);
+  const [customBrand, setCustomBrand] = useState(
+    initialData.brand && !BRAND_COLORS.find(b => b.label === initialData.brand)
+      ? initialData.brand : ''
+  );
   const fileRef = useRef(null);
 
   const handleFiles = (files) => {
@@ -21,10 +43,7 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
     });
   };
 
-  const removeExisting = (idx) => {
-    setExistingImages((prev) => prev.filter((_, i) => i !== idx));
-  };
-
+  const removeExisting = (idx) => setExistingImages((prev) => prev.filter((_, i) => i !== idx));
   const removeNew = (idx) => {
     setNewFiles((prev) => prev.filter((_, i) => i !== idx));
     setPreviews((prev) => prev.filter((_, i) => i !== idx));
@@ -36,9 +55,17 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
     handleFiles(e.dataTransfer.files);
   };
 
+  const handleBrandPreset = (b) => {
+    setBrand(b.label);
+    setBrandColor(b.color);
+    setBrandTextColor(b.text);
+    setCustomBrand('');
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ name, price: Number(price), description, existingImages, newFiles });
+    const finalBrand = customBrand || brand;
+    onSubmit({ name, price: Number(price), description, brand: finalBrand, brandColor, brandTextColor, existingImages, newFiles });
   };
 
   return (
@@ -46,49 +73,94 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
       {/* Product Name */}
       <div className="form-group">
         <label className="form-label" htmlFor="prod-name">ชื่อสินค้า *</label>
-        <input
-          id="prod-name"
-          type="text"
-          className="form-input"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="เช่น Oversized Tee สีดำ"
-          required
-        />
+        <input id="prod-name" type="text" className="form-input" value={name}
+          onChange={(e) => setName(e.target.value)} placeholder="เช่น Oversized Tee สีดำ" required />
       </div>
 
       {/* Price */}
       <div className="form-group">
         <label className="form-label" htmlFor="prod-price">ราคา (฿) *</label>
-        <input
-          id="prod-price"
-          type="number"
-          min="0"
-          className="form-input"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          placeholder="590"
-          required
-        />
+        <input id="prod-price" type="number" min="0" className="form-input" value={price}
+          onChange={(e) => setPrice(e.target.value)} placeholder="590" required />
+      </div>
+
+      {/* Brand Tag / Sticker */}
+      <div className="form-group">
+        <label className="form-label">แบรนด์ / Tag สติกเกอร์</label>
+        <p style={{ fontSize: '0.75rem', color: 'var(--fg-muted)', marginBottom: '12px' }}>
+          เลือกแบรนด์ที่มี หรือพิมพ์ชื่อแบรนด์เองด้านล่าง
+        </p>
+
+        {/* Preset brand buttons */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+          {BRAND_COLORS.map((b) => (
+            <button
+              key={b.label}
+              type="button"
+              onClick={() => handleBrandPreset(b)}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '999px',
+                background: b.color,
+                color: b.text,
+                border: `2px solid ${brand === b.label ? 'var(--accent)' : 'transparent'}`,
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                outline: brand === b.label ? '2px solid var(--fg)' : 'none',
+                outlineOffset: '2px',
+              }}
+            >
+              {b.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Custom brand input */}
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <input
+            type="text"
+            className="form-input"
+            placeholder="หรือพิมพ์ชื่อแบรนด์เอง เช่น Muji, Gap..."
+            value={customBrand}
+            onChange={(e) => { setCustomBrand(e.target.value); setBrand(''); }}
+            style={{ flex: 1 }}
+          />
+          <input type="color" value={brandColor} onChange={(e) => setBrandColor(e.target.value)}
+            title="สีพื้นหลัง sticker"
+            style={{ width: '40px', height: '40px', border: 'none', borderRadius: 'var(--radius)', cursor: 'pointer', padding: '2px' }} />
+          <input type="color" value={brandTextColor} onChange={(e) => setBrandTextColor(e.target.value)}
+            title="สีตัวอักษร sticker"
+            style={{ width: '40px', height: '40px', border: 'none', borderRadius: 'var(--radius)', cursor: 'pointer', padding: '2px', background: '#ccc' }} />
+        </div>
+
+        {/* Preview sticker */}
+        {(brand || customBrand) && (
+          <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--fg-muted)' }}>ตัวอย่าง sticker:</span>
+            <span style={{
+              background: brandColor, color: brandTextColor,
+              padding: '4px 12px', borderRadius: '999px',
+              fontSize: '0.75rem', fontWeight: 700,
+              letterSpacing: '0.05em',
+            }}>
+              {customBrand || brand}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Description */}
       <div className="form-group">
         <label className="form-label" htmlFor="prod-desc">รายละเอียดสินค้า</label>
-        <textarea
-          id="prod-desc"
-          className="form-textarea"
-          value={description}
+        <textarea id="prod-desc" className="form-textarea" value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="อธิบายสินค้า วัสดุ ไซส์ที่มี ฯลฯ"
-          rows={5}
-        />
+          placeholder="อธิบายสินค้า วัสดุ ไซส์ที่มี สภาพสินค้า ฯลฯ" rows={4} />
       </div>
 
       {/* Image Upload */}
       <div className="form-group">
         <label className="form-label">รูปภาพสินค้า (หลายรูปได้)</label>
-
         <div
           className={`upload-zone ${dragging ? 'drag-over' : ''}`}
           onClick={() => fileRef.current?.click()}
@@ -96,62 +168,37 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
           onDragLeave={() => setDragging(false)}
           onDrop={handleDrop}
         >
-          <div className="upload-zone-icon">📁</div>
-          <p className="upload-zone-text">คลิกเพื่อเลือกรูป หรือลากมาวางที่นี่</p>
-          <p className="upload-zone-hint">รองรับ JPG, PNG, WEBP (ไม่จำกัดจำนวน)</p>
+          <div className="upload-zone-icon">📷</div>
+          <p className="upload-zone-text">คลิกหรือลากรูปมาวางที่นี่</p>
+          <p className="upload-zone-hint">JPG, PNG, WEBP — ไม่จำกัดจำนวน</p>
         </div>
+        <input ref={fileRef} type="file" accept="image/*" multiple
+          style={{ display: 'none' }} onChange={(e) => handleFiles(e.target.files)} />
 
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          multiple
-          style={{ display: 'none' }}
-          onChange={(e) => handleFiles(e.target.files)}
-        />
-
-        {/* Existing Images */}
         {existingImages.length > 0 && (
           <div>
-            <p style={{ fontSize: '0.75rem', color: 'var(--fg-muted)', marginTop: '16px', marginBottom: '8px' }}>
-              รูปภาพเดิม
-            </p>
+            <p style={{ fontSize: '0.75rem', color: 'var(--fg-muted)', marginTop: '16px', marginBottom: '8px' }}>รูปเดิม</p>
             <div className="preview-grid">
               {existingImages.map((url, i) => (
                 <div key={i} className="preview-item">
                   <img src={url} alt={`Existing ${i}`} />
-                  <button
-                    type="button"
-                    className="preview-item-remove"
-                    onClick={() => removeExisting(i)}
-                    aria-label="Remove image"
-                  >
-                    ✕
-                  </button>
+                  <button type="button" className="preview-item-remove" onClick={() => removeExisting(i)}>✕</button>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* New Image Previews */}
         {previews.length > 0 && (
           <div>
             <p style={{ fontSize: '0.75rem', color: 'var(--fg-muted)', marginTop: '16px', marginBottom: '8px' }}>
-              รูปใหม่ที่จะอัปโหลด
+              รูปใหม่ ({previews.length} รูป)
             </p>
             <div className="preview-grid">
               {previews.map((src, i) => (
                 <div key={i} className="preview-item">
                   <img src={src} alt={`Preview ${i}`} />
-                  <button
-                    type="button"
-                    className="preview-item-remove"
-                    onClick={() => removeNew(i)}
-                    aria-label="Remove preview"
-                  >
-                    ✕
-                  </button>
+                  <button type="button" className="preview-item-remove" onClick={() => removeNew(i)}>✕</button>
                 </div>
               ))}
             </div>
@@ -159,12 +206,7 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
         )}
       </div>
 
-      <button
-        type="submit"
-        id="submit-product"
-        className="btn btn-primary btn-full btn-lg"
-        disabled={submitting}
-      >
+      <button type="submit" id="submit-product" className="btn btn-primary btn-full btn-lg" disabled={submitting}>
         {submitting ? 'กำลังบันทึก…' : 'บันทึกสินค้า'}
       </button>
     </form>

@@ -15,7 +15,7 @@ export default function AdminLayout({ children }) {
 
   const navItems = [
     { href: '/admin', label: 'สินค้าทั้งหมด', icon: '📦' },
-    { href: '/admin/new', label: 'เพิ่มสินค้าใหม่', icon: '➕' },
+    { href: '/admin/new', label: 'เพิ่มสินค้า', icon: '➕' },
     { href: '/', label: 'ดูหน้าเว็บหลัก', icon: '🌐' },
   ];
 
@@ -27,7 +27,7 @@ export default function AdminLayout({ children }) {
       <div className="admin-layout">
         {/* Sidebar */}
         <aside className="admin-sidebar">
-          <div className="admin-sidebar-logo">NOIR. Admin</div>
+          <div className="admin-sidebar-logo">Su Sell Admin</div>
 
           <nav style={{ flex: 1 }}>
             {navItems.map((item) => (
