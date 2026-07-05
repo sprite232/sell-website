@@ -6,16 +6,21 @@ import AdminProductForm from '@/components/AdminProductForm';
 import { getProduct, updateProduct } from '@/lib/firestore';
 
 async function uploadToCloudinary(file) {
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+  formData.append('upload_preset', uploadPreset);
 
   const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
     { method: 'POST', body: formData }
   );
-  if (!res.ok) throw new Error('Upload failed');
   const data = await res.json();
+  if (!res.ok || data.error) {
+    throw new Error(data?.error?.message || 'อัปโหลดรูปไม่สำเร็จ');
+  }
   return data.secure_url;
 }
 
@@ -40,15 +45,19 @@ export default function EditProductPage() {
     setSubmitting(true);
     setError('');
     try {
-      const uploadedUrls = await Promise.all(newFiles.map(uploadToCloudinary));
+      // Upload sequentially (more reliable)
+      const uploadedUrls = [];
+      for (const file of newFiles) {
+        const url = await uploadToCloudinary(file);
+        uploadedUrls.push(url);
+      }
       const allImages = [...existingImages, ...uploadedUrls];
-
       await updateProduct(id, { name, price, description, images: allImages });
-      setToast('อัปเดตสินค้าเรียบร้อยแล้ว!');
-      setTimeout(() => router.push('/admin'), 1200);
+      setToast('✅ อัปเดตสินค้าเรียบร้อยแล้ว!');
+      setTimeout(() => router.push('/admin'), 1500);
     } catch (e) {
       console.error(e);
-      setError('เกิดข้อผิดพลาดในการบันทึก กรุณาลองใหม่อีกครั้ง');
+      setError(`เกิดข้อผิดพลาด: ${e.message}`);
     } finally {
       setSubmitting(false);
     }
