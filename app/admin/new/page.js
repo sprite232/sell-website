@@ -6,16 +6,25 @@ import AdminProductForm from '@/components/AdminProductForm';
 import { addProduct } from '@/lib/firestore';
 
 async function uploadToCloudinary(file) {
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
+  formData.append('upload_preset', uploadPreset);
 
   const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
     { method: 'POST', body: formData }
   );
-  if (!res.ok) throw new Error('Upload failed');
+
   const data = await res.json();
+
+  if (!res.ok || data.error) {
+    console.error('Cloudinary error:', data);
+    throw new Error(data?.error?.message || 'อัปโหลดรูปไม่สำเร็จ');
+  }
+
   return data.secure_url;
 }
 
@@ -28,17 +37,24 @@ export default function NewProductPage() {
   const handleSubmit = async ({ name, price, description, existingImages, newFiles }) => {
     setSubmitting(true);
     setError('');
-    try {
-      // Upload new images to Cloudinary
-      const uploadedUrls = await Promise.all(newFiles.map(uploadToCloudinary));
-      const allImages = [...existingImages, ...uploadedUrls];
 
+    try {
+      let uploadedUrls = [];
+
+      // Upload each image one by one (more reliable than parallel)
+      for (const file of newFiles) {
+        const url = await uploadToCloudinary(file);
+        uploadedUrls.push(url);
+      }
+
+      const allImages = [...existingImages, ...uploadedUrls];
       await addProduct({ name, price, description, images: allImages });
-      setToast('เพิ่มสินค้าเรียบร้อยแล้ว!');
-      setTimeout(() => router.push('/admin'), 1200);
+
+      setToast('✅ เพิ่มสินค้าเรียบร้อยแล้ว!');
+      setTimeout(() => router.push('/admin'), 1500);
     } catch (e) {
-      console.error(e);
-      setError('เกิดข้อผิดพลาดในการบันทึก กรุณาลองใหม่อีกครั้ง');
+      console.error('Submit error:', e);
+      setError(`เกิดข้อผิดพลาด: ${e.message}`);
     } finally {
       setSubmitting(false);
     }

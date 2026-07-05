@@ -2,8 +2,8 @@ import '../styles/globals.css';
 import { AuthProvider } from '@/hooks/useAuth';
 
 export const metadata = {
-  title: 'NOIR. — Minimalist Clothing Store',
-  description: 'คอลเลกชันเสื้อผ้าสไตล์ minimalist สีขาวดำ ออกแบบอย่างพิถีพิถัน',
+  title: 'Su Sell Second hand — เสื้อผ้ามือสอง ของแท้ 100%',
+  description: 'เสื้อผ้ามือ 1-2 คัดสรรมาอย่างดี ของแท้ทุกชิ้น DM สอบถามหรือสั่งซื้อได้เลย',
 };
 
 export default function RootLayout({ children }) {

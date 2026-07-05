@@ -1,22 +1,31 @@
 'use client';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function ProductCard({ product }) {
-  const { id, name, price, description, images } = product;
-  const thumb = images?.[0] || '/placeholder.png';
+  const { id, name, price, description, images, code } = product;
+  const thumb = images?.[0] || null;
 
   return (
     <Link href={`/products/${id}`} className="product-card">
       <div className="product-card-image-wrapper">
-        <img
-          src={thumb}
-          alt={name}
-          className="product-card-image"
-          loading="lazy"
-        />
-        {images?.length > 1 && (
-          <span className="product-card-badge">{images.length} รูป</span>
+        {thumb ? (
+          <img
+            src={thumb}
+            alt={name}
+            className="product-card-image"
+            loading="lazy"
+          />
+        ) : (
+          <div className="product-card-image" style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '2.5rem', background: 'var(--bg-secondary)',
+          }}>
+            👗
+          </div>
+        )}
+        {/* Product Code Badge */}
+        {code && (
+          <span className="product-card-badge">{code}</span>
         )}
       </div>
       <div className="product-card-body">

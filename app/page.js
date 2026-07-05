@@ -23,12 +23,21 @@ export default function HomePage() {
         {/* ─── Hero ─── */}
         <section className="hero">
           <div className="container">
-            <p className="hero-label">New Collection 2026</p>
+            <p className="hero-label">เสื้อผ้ามือสอง ของแท้ 100%</p>
             <h1 className="hero-title font-display">
-              Minimal.<br />Timeless.<br />Yours.
+              Su Sell<br />Second hand
             </h1>
             <p className="hero-subtitle">
-              คอลเลกชันเสื้อผ้าสไตล์ minimalist ออกแบบมาเพื่อความสะอาดตาและสวมใส่สบาย ในทุกโอกาส
+              เสื้อผ้ามือ 1-2 คัดสรรมาอย่างดี ของแท้ทุกชิ้น
+              DM สอบถามหรือสั่งซื้อได้เลยที่ IG{' '}
+              <a
+                href="https://www.instagram.com/sell_second_hand_clothes.th"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontWeight: 600, borderBottom: '1px solid currentColor' }}
+              >
+                @sell_second_hand_clothes.th
+              </a>
             </p>
           </div>
         </section>
@@ -44,7 +53,6 @@ export default function HomePage() {
             </div>
 
             {loading ? (
-              /* Skeleton Loading */
               <div className="product-grid">
                 {[...Array(6)].map((_, i) => (
                   <div key={i}>
@@ -55,14 +63,21 @@ export default function HomePage() {
                 ))}
               </div>
             ) : products.length === 0 ? (
-              /* Empty State */
               <div className="empty-state">
-                <div className="empty-state-icon">🛍️</div>
+                <div className="empty-state-icon">👗</div>
                 <h3 className="empty-state-title">ยังไม่มีสินค้า</h3>
-                <p className="empty-state-desc">กำลังเพิ่มสินค้าเร็วๆ นี้ กลับมาเยี่ยมชมใหม่นะครับ</p>
+                <p className="empty-state-desc">กำลังเพิ่มสินค้าเร็วๆ นี้ ติดตามได้ที่ IG ร้านนะครับ</p>
+                <a
+                  href="https://www.instagram.com/sell_second_hand_clothes.th"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-outline"
+                  style={{ marginTop: '16px', display: 'inline-flex' }}
+                >
+                  ติดตาม IG ร้าน
+                </a>
               </div>
             ) : (
-              /* Product Cards */
               <div className="product-grid">
                 {products.map((p) => (
                   <ProductCard key={p.id} product={p} />
@@ -76,8 +91,21 @@ export default function HomePage() {
       <footer className="footer">
         <div className="container">
           <div className="footer-inner">
-            <span className="footer-copy">© 2026 NOIR. All rights reserved.</span>
-            <span className="footer-copy" style={{ fontSize: '0.75rem' }}>Minimalist Clothing</span>
+            <span className="footer-copy">© 2026 Su Sell Second hand</span>
+            <a
+              href="https://www.instagram.com/sell_second_hand_clothes.th"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-copy"
+              style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" strokeWidth="0"/>
+              </svg>
+              @sell_second_hand_clothes.th
+            </a>
           </div>
         </div>
       </footer>
