@@ -1195,9 +1195,7 @@ h1, h2, h3, h4 {
   color: var(--fg-muted);
 }
 
-/* ========================
-   BRAND STICKER ON CARD
-   ======================== */
+/* Brand Sticker - fixed position inside card wrapper */
 .brand-sticker {
   position: absolute;
   top: 10px;
@@ -1208,9 +1206,18 @@ h1, h2, h3, h4 {
   text-transform: uppercase;
   padding: 4px 10px;
   border-radius: 999px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  z-index: 3;
   font-family: 'Prompt', sans-serif;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Make sure card image wrapper clips properly */
+.product-card-image-wrapper {
+  overflow: hidden;
+  position: relative;
+  display: block;
 }
 
 /* ========================
@@ -1243,3 +1250,173 @@ h1, h2, h3, h4 {
   .logo-circle-text { font-size: 1.1rem; }
 }
 
+/* ========================
+   ANNOUNCEMENT BANNER
+   ======================== */
+.announcement-banner {
+  width: 100%;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-family: 'Prompt', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  position: relative;
+  z-index: 90;
+  animation: slideDown 0.4s ease;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+.announcement-text {
+  flex: 1;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.announcement-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.ann-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.ann-dot.active {
+  background: rgba(255,255,255,0.95);
+  width: 18px;
+  border-radius: 3px;
+}
+
+/* ========================
+   LOGO IMAGE (Real photo spin)
+   ======================== */
+.logo-img {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(0,0,0,0.2);
+}
+
+.logo-img-back {
+  transform: scaleX(-1); /* mirror on back face */
+}
+
+/* Override old CSS-only logo circle now we use img */
+.logo-3d-front .logo-circle,
+.logo-3d-back .logo-circle {
+  display: none;
+}
+
+/* ========================
+   FOOTER STYLES (ensure defined)
+   ======================== */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 0;
+  margin-top: 64px;
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.footer-copy {
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+  font-family: 'Prompt', sans-serif;
+}
+
+/* ========================
+   SKELETON LOADING
+   ======================== */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--border) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: var(--radius);
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ========================
+   EMPTY STATE
+   ======================== */
+.empty-state-title {
+  font-family: 'Prompt', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--fg);
+}
+
+.empty-state-desc {
+  font-family: 'Prompt', sans-serif;
+  font-size: 0.9rem;
+  color: var(--fg-muted);
+}
+
+/* ========================
+   TOAST
+   ======================== */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--fg);
+  color: var(--bg);
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-family: 'Prompt', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 9999;
+  box-shadow: var(--shadow-lg);
+  animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ========================
+   BREADCRUMB
+   ======================== */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+  margin-bottom: 12px;
+  font-family: 'Prompt', sans-serif;
+}
+
+.breadcrumb-sep {
+  opacity: 0.4;
+}

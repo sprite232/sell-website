@@ -2,21 +2,30 @@
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import ProductCard from '@/components/ProductCard';
-import { getProducts } from '@/lib/firestore';
+import { getProducts, getActiveAnnouncements } from '@/lib/firestore';
 
 export default function HomePage() {
   const [products, setProducts] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeBrand, setActiveBrand] = useState('ทั้งหมด');
+  const [annIdx, setAnnIdx] = useState(0);
 
   useEffect(() => {
-    getProducts()
-      .then(setProducts)
+    Promise.all([getProducts(), getActiveAnnouncements()])
+      .then(([prods, anns]) => { setProducts(prods); setAnnouncements(anns); })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
-  // Get unique brands + counts
+  // Rotate announcements every 4 seconds
+  useEffect(() => {
+    if (announcements.length <= 1) return;
+    const t = setInterval(() => setAnnIdx(i => (i + 1) % announcements.length), 4000);
+    return () => clearInterval(t);
+  }, [announcements.length]);
+
+  // Brand counts
   const brandMap = {};
   products.forEach(p => {
     const b = p.brand || 'ไม่ระบุแบรนด์';
@@ -28,9 +37,35 @@ export default function HomePage() {
     ? products
     : products.filter(p => (p.brand || 'ไม่ระบุแบรนด์') === activeBrand);
 
+  const ann = announcements[annIdx];
+
   return (
     <>
       <Navbar />
+
+      {/* ─── Announcement Banner ─── */}
+      {ann && (
+        <div
+          className="announcement-banner"
+          style={{ background: ann.bgColor || '#ff3b30', color: ann.textColor || '#fff' }}
+        >
+          <span className="announcement-text">
+            {ann.emoji} {ann.message}
+          </span>
+          {announcements.length > 1 && (
+            <span className="announcement-dots">
+              {announcements.map((_, i) => (
+                <span
+                  key={i}
+                  onClick={() => setAnnIdx(i)}
+                  className={`ann-dot ${i === annIdx ? 'active' : ''}`}
+                />
+              ))}
+            </span>
+          )}
+        </div>
+      )}
+
       <main>
         {/* ─── Hero ─── */}
         <section className="hero">
@@ -70,27 +105,21 @@ export default function HomePage() {
                 </a>
               </div>
 
-              {/* Right: 3D Spinning Logo */}
+              {/* Right: Real Logo spinning 3D */}
               <div className="hero-logo-col">
                 <div className="logo-3d-wrapper">
                   <div className="logo-3d-spin">
                     <div className="logo-3d-front">
-                      <div className="logo-circle">
-                        <span className="logo-circle-text">Su Sell</span>
-                        <span className="logo-circle-sub">Second hand</span>
-                      </div>
+                      <img src="/logo.png" alt="Su Sell Second hand" className="logo-img" />
                     </div>
                     <div className="logo-3d-back">
-                      <div className="logo-circle logo-circle-back">
-                        <span className="logo-circle-text">👗✨</span>
-                        <span className="logo-circle-sub">ของแท้ 100%</span>
-                      </div>
+                      <img src="/logo.png" alt="Su Sell Second hand" className="logo-img logo-img-back" />
                     </div>
                   </div>
                   {/* Floating badges */}
-                  <div className="logo-badge logo-badge-1">Nike ✓</div>
-                  <div className="logo-badge logo-badge-2">Adidas ✓</div>
-                  <div className="logo-badge logo-badge-3">Uniqlo ✓</div>
+                  <div className="logo-badge logo-badge-1">ของแท้ ✓</div>
+                  <div className="logo-badge logo-badge-2">มือ 1-2 ✓</div>
+                  <div className="logo-badge logo-badge-3">DM สั่งได้ ✓</div>
                 </div>
               </div>
             </div>
@@ -99,7 +128,7 @@ export default function HomePage() {
 
         {/* ─── Brand Filter ─── */}
         {!loading && brands.length > 0 && (
-          <section style={{ borderBottom: '1px solid var(--border)', padding: '0' }}>
+          <section style={{ borderBottom: '1px solid var(--border)' }}>
             <div className="container">
               <div className="brand-filter-bar">
                 <button
@@ -159,7 +188,7 @@ export default function HomePage() {
               </div>
             ) : (
               <div className="product-grid">
-                {filtered.map((p) => (
+                {filtered.map(p => (
                   <ProductCard key={p.id} product={p} />
                 ))}
               </div>

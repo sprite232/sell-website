@@ -16,6 +16,7 @@ export default function AdminLayout({ children }) {
   const navItems = [
     { href: '/admin', label: 'สินค้าทั้งหมด', icon: '📦' },
     { href: '/admin/new', label: 'เพิ่มสินค้า', icon: '➕' },
+    { href: '/admin/announcements', label: 'ประกาศ / แบนเนอร์', icon: '📢' },
     { href: '/', label: 'ดูหน้าเว็บหลัก', icon: '🌐' },
   ];
 
