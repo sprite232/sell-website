@@ -25,17 +25,18 @@ export default function HomePage() {
     return () => clearInterval(t);
   }, [announcements.length]);
 
-  // Brand counts
+  // Brand counts — exclude drafts
+  const publicProducts = products.filter(p => p.status !== 'draft');
   const brandMap = {};
-  products.forEach(p => {
+  publicProducts.forEach(p => {
     const b = p.brand || 'ไม่ระบุแบรนด์';
     brandMap[b] = (brandMap[b] || 0) + 1;
   });
   const brands = Object.entries(brandMap).sort((a, b) => b[1] - a[1]);
 
   const filtered = activeBrand === 'ทั้งหมด'
-    ? products
-    : products.filter(p => (p.brand || 'ไม่ระบุแบรนด์') === activeBrand);
+    ? publicProducts
+    : publicProducts.filter(p => (p.brand || 'ไม่ระบุแบรนด์') === activeBrand);
 
   const ann = announcements[annIdx];
 

@@ -65,6 +65,20 @@ export default function ProductDetailPage() {
 
                 {/* Right: Product Info */}
                 <div>
+                  {/* Sold Out banner */}
+                  {product.status === 'sold' && (
+                    <div style={{
+                      background: 'rgba(255,59,48,0.1)', border: '1.5px solid #ff3b30',
+                      borderRadius: 'var(--radius)', padding: '10px 16px',
+                      marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px',
+                    }}>
+                      <span style={{ fontSize: '1.2rem' }}>🔴</span>
+                      <span style={{ fontWeight: 700, color: '#ff3b30', fontFamily: 'Prompt, sans-serif' }}>
+                        สินค้าชิ้นนี้ขายไปแล้ว
+                      </span>
+                    </div>
+                  )}
+
                   {/* Brand sticker */}
                   {product.brand && (
                     <div style={{ marginBottom: '16px' }}>
@@ -81,13 +95,20 @@ export default function ProductDetailPage() {
                     </div>
                   )}
 
-                  <h1 className="product-detail-title font-display">{product.name}</h1>
+                  <h1 className="product-detail-title font-display"
+                    style={{ opacity: product.status === 'sold' ? 0.7 : 1 }}>
+                    {product.name}
+                  </h1>
                   {product.code && (
                     <p style={{ fontSize: '0.8rem', color: 'var(--fg-muted)', marginBottom: '8px', fontFamily: 'Prompt, sans-serif' }}>
                       รหัสสินค้า: <strong>{product.code}</strong>
                     </p>
                   )}
-                  <p className="product-detail-price">฿{Number(product.price).toLocaleString()}</p>
+                  <p className="product-detail-price">
+                    {product.status === 'sold'
+                      ? <s style={{ opacity: 0.5 }}>฿{Number(product.price).toLocaleString()}</s>
+                      : `฿${Number(product.price).toLocaleString()}`}
+                  </p>
 
                   <hr className="product-detail-divider" />
 
@@ -97,31 +118,47 @@ export default function ProductDetailPage() {
 
                   <hr className="product-detail-divider" />
 
-                  {/* Contact CTA — Instagram */}
+                  {/* Contact CTA */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--fg-muted)', fontFamily: 'Prompt, sans-serif' }}>
-                      📩 สนใจสินค้าชิ้นนี้? DM มาได้เลย!
-                    </p>
-                    <a
-                      id="contact-ig"
-                      href={`https://www.instagram.com/sell_second_hand_clothes.th`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-primary btn-lg btn-full"
-                      style={{ gap: '10px', fontFamily: 'Prompt, sans-serif' }}
-                    >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                        <circle cx="12" cy="12" r="4"/>
-                        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" strokeWidth="0"/>
-                      </svg>
-                      DM สั่งซื้อผ่าน Instagram
-                    </a>
+                    {product.status === 'sold' ? (
+                      <>
+                        <p style={{ fontSize: '0.9rem', color: 'var(--fg-muted)', fontFamily: 'Prompt, sans-serif', textAlign: 'center', padding: '16px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius)' }}>
+                          😢 สินค้านี้ขายไปแล้ว แต่ยังมีสินค้าดีๆ อีกเยอะ!
+                        </p>
+                        <a href="https://www.instagram.com/sell_second_hand_clothes.th"
+                          target="_blank" rel="noopener noreferrer"
+                          className="btn btn-outline btn-full"
+                          style={{ gap: '8px', fontFamily: 'Prompt, sans-serif' }}>
+                          ดูสินค้าอื่นใน IG
+                        </a>
+                      </>
+                    ) : (
+                      <>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--fg-muted)', fontFamily: 'Prompt, sans-serif' }}>
+                          📩 สนใจสินค้าชิ้นนี้? DM มาได้เลย!
+                        </p>
+                        <a
+                          id="contact-ig"
+                          href="https://www.instagram.com/sell_second_hand_clothes.th"
+                          target="_blank" rel="noopener noreferrer"
+                          className="btn btn-primary btn-lg btn-full"
+                          style={{ gap: '10px', fontFamily: 'Prompt, sans-serif' }}
+                        >
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                            <circle cx="12" cy="12" r="4"/>
+                            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" strokeWidth="0"/>
+                          </svg>
+                          DM สั่งซื้อผ่าน Instagram
+                        </a>
+                      </>
+                    )}
                     <Link href="/" className="btn btn-ghost btn-full">
                       ← ดูสินค้าอื่น
                     </Link>
                   </div>
                 </div>
+
               </div>
             </div>
           ) : null}

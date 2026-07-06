@@ -20,6 +20,7 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
   const [name, setName] = useState(initialData.name || '');
   const [price, setPrice] = useState(initialData.price || '');
   const [description, setDescription] = useState(initialData.description || '');
+  const [status, setStatus] = useState(initialData.status || 'available');
   const [brand, setBrand] = useState(initialData.brand || '');
   const [brandColor, setBrandColor] = useState(initialData.brandColor || '#000000');
   const [brandTextColor, setBrandTextColor] = useState(initialData.brandTextColor || '#ffffff');
@@ -65,7 +66,7 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
   const handleSubmit = (e) => {
     e.preventDefault();
     const finalBrand = customBrand || brand;
-    onSubmit({ name, price: Number(price), description, brand: finalBrand, brandColor, brandTextColor, existingImages, newFiles });
+    onSubmit({ name, price: Number(price), description, status, brand: finalBrand, brandColor, brandTextColor, existingImages, newFiles });
   };
 
   return (
@@ -148,6 +149,26 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
             </span>
           </div>
         )}
+      </div>
+
+      {/* Status */}
+      <div className="form-group">
+        <label className="form-label">สถานะสินค้า</label>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          {[
+            { value: 'available', label: '🟢 เผยแพร์ (ขายอยู่)' },
+            { value: 'draft',     label: '✏️ ฝับร่าง (ยังไม่แสดง)' },
+          ].map(opt => (
+            <button key={opt.value} type="button"
+              onClick={() => setStatus(opt.value)}
+              className={`btn btn-sm ${status === opt.value ? 'btn-primary' : 'btn-ghost'}`}>
+              {opt.label}
+            </button>
+          ))}
+        </div>
+        <p style={{ fontSize: '0.75rem', color: 'var(--fg-muted)', marginTop: '6px' }}>
+          ฝับร่าง = บันทึกไว้ก่อน ไม่แสดงในหน้าเว็บ แอดมินสามารถเปลี่ยนได้ภายหลัง
+        </p>
       </div>
 
       {/* Description */}
