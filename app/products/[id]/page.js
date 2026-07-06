@@ -5,12 +5,14 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import ImageGallery from '@/components/ImageGallery';
 import { getProduct } from '@/lib/firestore';
+import { useCart } from '@/contexts/CartContext';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const { addToCart, isInCart } = useCart();
 
   useEffect(() => {
     if (!id) return;
@@ -137,6 +139,20 @@ export default function ProductDetailPage() {
                         <p style={{ fontSize: '0.8rem', color: 'var(--fg-muted)', fontFamily: 'Prompt, sans-serif' }}>
                           📩 สนใจสินค้าชิ้นนี้? DM มาได้เลย!
                         </p>
+                        {/* Add to Cart */}
+                        <button
+                          onClick={() => addToCart({
+                            id: product.id, name: product.name,
+                            price: product.price, code: product.code,
+                            brand: product.brand, brandColor: product.brandColor,
+                            brandTextColor: product.brandTextColor,
+                            image: product.images?.[0],
+                          })}
+                          className={`btn btn-full btn-lg ${isInCart(product.id) ? 'btn-outline' : 'btn-secondary'}`}
+                          style={{ gap: '10px', fontFamily: 'Prompt, sans-serif' }}
+                        >
+                          {isInCart(product.id) ? '✓ อยู่ในตะกร้าแล้ว' : '🛒 ใส่ตะกร้า'}
+                        </button>
                         <a
                           id="contact-ig"
                           href="https://www.instagram.com/sell_second_hand_clothes.th"

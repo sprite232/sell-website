@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import ProductCard from '@/components/ProductCard';
+import ScrollReveal from '@/components/ScrollReveal';
 import { getProducts, getActiveAnnouncements } from '@/lib/firestore';
 
 export default function HomePage() {
@@ -43,6 +44,7 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
+      <ScrollReveal />
 
       {/* ─── Announcement Banner ─── */}
       {ann && (
@@ -155,7 +157,7 @@ export default function HomePage() {
         )}
 
         {/* ─── Product Grid ─── */}
-        <section className="product-grid-section">
+        <section className="product-grid-section reveal-section">
           <div className="container">
             <div className="section-header">
               <h2 className="section-title-casual">
