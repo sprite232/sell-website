@@ -2,31 +2,66 @@
 import { useEffect } from 'react';
 
 /**
- * Attaches IntersectionObserver to all `.reveal-card` elements in the DOM.
- * When they enter the viewport, adds class `revealed` which triggers the CSS animation.
- * Should be mounted once at the page/layout level.
+ * ScrollReveal — uses both IntersectionObserver (detect viewport entry)
+ * and MutationObserver (detect new .reveal-card / .reveal-section elements
+ * added to DOM after async data loads, e.g. Firestore products).
+ *
+ * This fixes the bug where products start at opacity:0 and never reveal
+ * because Firestore loads them AFTER the observer was already set up.
  */
 export default function ScrollReveal() {
   useEffect(() => {
-    const elements = document.querySelectorAll('.reveal-card, .reveal-section');
+    const SELECTOR = '.reveal-card, .reveal-section';
 
-    const observer = new IntersectionObserver(
+    // ── IntersectionObserver ──────────────────────────────
+    const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('revealed');
-            // Unobserve after animating — no need to re-trigger
-            observer.unobserve(entry.target);
+            io.unobserve(entry.target); // done watching this element
           }
         });
       },
-      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+      {
+        threshold: 0.05,          // trigger when just 5% is visible
+        rootMargin: '0px 0px -10px 0px', // small negative margin so cards near viewport edge still trigger
+      }
     );
 
-    elements.forEach((el) => observer.observe(el));
+    // Observe an element only if not already revealed
+    const observe = (el) => {
+      if (!el.classList.contains('revealed')) {
+        io.observe(el);
+      }
+    };
 
-    return () => observer.disconnect();
+    // Observe anything already in the DOM
+    document.querySelectorAll(SELECTOR).forEach(observe);
+
+    // ── MutationObserver ─────────────────────────────────
+    // Watches for new elements added to DOM (e.g. product cards after Firestore loads)
+    const mo = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType !== 1) return; // element nodes only
+
+          // Check if the added node itself matches
+          if (node.matches?.(SELECTOR)) observe(node);
+
+          // Check descendants too (e.g. a <section> added with .reveal-card children)
+          node.querySelectorAll?.(SELECTOR).forEach(observe);
+        });
+      });
+    });
+
+    mo.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      io.disconnect();
+      mo.disconnect();
+    };
   }, []);
 
-  return null; // no UI
+  return null;
 }
