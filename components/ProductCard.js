@@ -1,57 +1,56 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
 import { useCart } from '@/contexts/CartContext';
 
 export default function ProductCard({ product }) {
   const { id, name, price, description, images, code, brand, brandColor, brandTextColor, status } = product;
-  const [hovered, setHovered] = useState(false);
   const { addToCart, isInCart } = useCart();
 
-  const thumb   = images?.[0] || null;
-  const thumb2  = images?.[1] || null;          // second image for hover swap
-  const isSold  = status === 'sold';
+  const thumb  = images?.[0] || null;
+  const thumb2 = images?.[1] || null;
+  const isSold = status === 'sold';
   const isDraft = status === 'draft';
-  const inCart  = isInCart(id);
-
-  // Show second image on hover (PC only — handled via CSS @media(hover:hover))
-  const displayImg = hovered && thumb2 && !isSold ? thumb2 : thumb;
+  const inCart = isInCart(id);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (isSold || inCart) return;
-    addToCart({
-      id, name, price, code, brand, brandColor, brandTextColor,
-      image: thumb,
-    });
+    addToCart({ id, name, price, code, brand, brandColor, brandTextColor, image: thumb });
   };
 
   return (
     <div className="reveal-card">
-      <Link
-        href={`/products/${id}`}
-        className={`product-card ${isSold ? 'product-card--sold' : ''}`}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
+      <Link href={`/products/${id}`} className={`product-card ${isSold ? 'product-card--sold' : ''}`}>
         <div className="product-card-image-wrapper">
+
+          {/* Primary image — always shown, fades out on hover if thumb2 exists */}
           {thumb ? (
             <img
-              src={displayImg}
+              src={thumb}
               alt={name}
-              className="product-card-image"
+              className={`product-card-image img-primary ${thumb2 && !isSold ? 'has-secondary' : ''}`}
               loading="lazy"
-              style={{ filter: isSold ? 'grayscale(80%) brightness(0.7)' : 'none' }}
+              style={{ filter: isSold ? 'grayscale(75%) brightness(0.65)' : 'none' }}
             />
           ) : (
-            <div className="product-card-image" style={{
+            <div className="product-card-image img-primary" style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '3rem', background: 'var(--bg-secondary)',
             }}>👗</div>
           )}
 
-          {/* SOLD OUT overlay ribbon */}
+          {/* Secondary image — only rendered if exists, cross-fades in on hover (PC only via CSS) */}
+          {thumb2 && !isSold && (
+            <img
+              src={thumb2}
+              alt={`${name} — มุมอื่น`}
+              className="product-card-image img-secondary"
+              loading="lazy"
+            />
+          )}
+
+          {/* SOLD OUT ribbon */}
           {isSold && (
             <div className="sold-overlay">
               <span className="sold-ribbon">SOLD OUT</span>
@@ -66,15 +65,13 @@ export default function ProductCard({ product }) {
             <span className="brand-sticker" style={{
               background: brandColor || '#000',
               color: brandTextColor || '#fff',
-            }}>
-              {brand}
-            </span>
+            }}>{brand}</span>
           )}
 
           {/* Product Code — top left */}
           {code && <span className="product-card-badge">{code}</span>}
 
-          {/* Quick Add to Cart — shows on hover (PC only) */}
+          {/* Quick Add to Cart — visible on hover (PC only via CSS) */}
           {!isSold && (
             <button
               className={`card-cart-btn ${inCart ? 'card-cart-btn--in' : ''}`}
@@ -87,16 +84,12 @@ export default function ProductCard({ product }) {
         </div>
 
         <div className="product-card-body">
-          <h3 className="product-card-name" style={{ opacity: isSold ? 0.6 : 1 }}>{name}</h3>
-          <p className="product-card-price" style={{ opacity: isSold ? 0.5 : 1 }}>
+          <h3 className="product-card-name" style={{ opacity: isSold ? 0.55 : 1 }}>{name}</h3>
+          <p className="product-card-price" style={{ opacity: isSold ? 0.45 : 1 }}>
             {isSold ? <s>฿{Number(price).toLocaleString()}</s> : `฿${Number(price).toLocaleString()}`}
           </p>
-          {description && !isSold && (
-            <p className="product-card-desc">{description}</p>
-          )}
-          {isSold && (
-            <p style={{ fontSize: '0.75rem', color: 'var(--fg-muted)', fontFamily: 'Prompt, sans-serif' }}>ขายแล้ว 🎉</p>
-          )}
+          {description && !isSold && <p className="product-card-desc">{description}</p>}
+          {isSold && <p className="sold-tag-text">ขายแล้ว 🎉</p>}
         </div>
       </Link>
     </div>

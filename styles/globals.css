@@ -1598,65 +1598,84 @@ h1, h2, h3, h4 {
 }
 
 /* ========================
-   HOVER EFFECTS — PC ONLY
-   @media (hover: hover) targets real mouse devices
-   Touch screens are excluded automatically
+   HOVER EFFECTS — PC ONLY (mouse devices)
+   Uses @media(hover:hover) so mobile is untouched
    ======================== */
+
+/* Secondary image: sits on top, hidden by default */
+.img-secondary {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+/* Primary image transitions */
+.img-primary {
+  transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 0;
+}
+
 @media (hover: hover) and (pointer: fine) {
-  /* Zoom image on hover */
-  .product-card:hover .product-card-image {
+  /* Zoom primary image on hover */
+  .product-card:hover .img-primary {
     transform: scale(1.07);
-    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .product-card .product-card-image {
-    transition: transform 0.35s ease;
-  }
-
-  /* Show quick add-to-cart button on card hover */
-  .card-cart-btn {
-    opacity: 0;
-    transform: translateY(8px);
-    pointer-events: none;
-  }
-
-  .product-card:hover .card-cart-btn {
+  /* Fade in secondary image on hover (only when it exists) */
+  .product-card:hover .img-secondary {
     opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
+  }
+
+  /* When primary has a secondary sibling: fade it out */
+  .product-card:hover .img-primary.has-secondary {
+    opacity: 0;
   }
 }
 
 /* ========================
-   QUICK ADD-TO-CART BUTTON (on card)
+   QUICK ADD-TO-CART BUTTON
+   Fixed: use CSS custom property trick to keep translateX(-50%) intact
    ======================== */
 .card-cart-btn {
   position: absolute;
-  bottom: 10px;
+  bottom: 12px;
   left: 50%;
-  transform: translateX(-50%) translateY(8px);
+  /* base: centered, slid down, hidden */
+  translate: -50% 10px;
+  opacity: 0;
+  pointer-events: none;
   background: var(--fg);
   color: var(--bg);
   font-family: 'Prompt', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  padding: 7px 18px;
+  padding: 8px 20px;
   border-radius: 999px;
   border: none;
   cursor: pointer;
   white-space: nowrap;
   z-index: 4;
-  transition: opacity 0.25s ease, transform 0.25s ease, background 0.2s ease;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  transition: opacity 0.28s ease, translate 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover .card-cart-btn {
+    opacity: 1;
+    translate: -50% 0px;
+    pointer-events: auto;
+  }
 }
 
 .card-cart-btn--in {
-  background: #34c759;
-  color: #fff;
-}
-
-.card-cart-btn:hover {
-  transform: translateX(-50%) translateY(0) scale(1.05);
+  background: #34c759 !important;
+  color: #fff !important;
 }
 
 /* btn-secondary for add-to-cart on detail page */
@@ -1925,3 +1944,185 @@ h1, h2, h3, h4 {
   border-top: 1px solid var(--border);
   flex-shrink: 0;
 }
+
+/* ========================
+   HERO CHIPS (casual badges)
+   ======================== */
+.hero-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.hero-chip {
+  font-family: 'Prompt', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 999px;
+  animation: chipBob 2.8s ease-in-out infinite;
+}
+
+.hero-chip--pink  { background: rgba(255,45,146,0.12); color: #ff2d92; border: 1px solid rgba(255,45,146,0.25); animation-delay: 0s; }
+.hero-chip--blue  { background: rgba(0,122,255,0.10);  color: #007aff; border: 1px solid rgba(0,122,255,0.2);   animation-delay: 0.4s; }
+.hero-chip--green { background: rgba(52,199,89,0.10);  color: #34c759; border: 1px solid rgba(52,199,89,0.2);   animation-delay: 0.8s; }
+
+@keyframes chipBob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+/* ========================
+   IG CTA BUTTON (gradient animated)
+   ======================== */
+.btn-ig-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 24px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  background-size: 200% 200%;
+  animation: igGradientMove 3s ease infinite;
+  color: #fff;
+  text-decoration: none;
+  font-family: 'Prompt', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 8px;
+  box-shadow: 0 6px 24px rgba(220,39,67,0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-ig-hero:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 32px rgba(220,39,67,0.45);
+}
+
+@keyframes igGradientMove {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.btn-ig-icon { display: flex; align-items: center; flex-shrink: 0; }
+.btn-ig-text { display: flex; flex-direction: column; gap: 1px; }
+.btn-ig-main { font-size: 1rem; font-weight: 800; line-height: 1.2; }
+.btn-ig-sub  { font-size: 0.72rem; font-weight: 400; opacity: 0.85; }
+.btn-ig-arrow { font-size: 1.1rem; transition: transform 0.2s ease; }
+.btn-ig-hero:hover .btn-ig-arrow { transform: translateX(4px); }
+
+/* ========================
+   IG CONTACT STRIP
+   ======================== */
+.ig-strip {
+  background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  background-size: 300% 300%;
+  animation: igGradientMove 5s ease infinite;
+  padding: 16px 0;
+}
+
+.ig-strip-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ig-strip-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ig-avatar-pulse {
+  width: 48px;
+  height: 48px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.ig-avatar-pulse::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.5);
+  animation: igPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes igPulse {
+  0%, 100% { transform: scale(1);    opacity: 0.6; }
+  50%       { transform: scale(1.15); opacity: 0;   }
+}
+
+.ig-strip-name {
+  font-family: 'Prompt', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.ig-strip-desc {
+  font-family: 'Prompt', sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.8);
+  margin-top: 2px;
+}
+
+.ig-strip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  color: #cc2366;
+  font-family: 'Prompt', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 10px 22px;
+  border-radius: 999px;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.ig-strip-btn:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+/* ========================
+   FOOTER IG LINK
+   ======================== */
+.footer-ig-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Prompt', sans-serif;
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-ig-link:hover { color: #cc2366; }
+
+/* ========================
+   SOLD TAG TEXT
+   ======================== */
+.sold-tag-text {
+  font-size: 0.75rem;
+  color: var(--fg-muted);
+  font-family: 'Prompt', sans-serif;
+}
+
