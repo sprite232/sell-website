@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AdminProductForm from '@/components/AdminProductForm';
 import { addProduct } from '@/lib/firestore';
+import { validateProductPayload, validateImageFiles } from '@/lib/validate';
 
 async function uploadToCloudinary(file) {
   const formData = new FormData();
@@ -30,14 +31,18 @@ export default function NewProductPage() {
   const router = useRouter();
 
   // ─── Single product submit ───
-  const handleSingleSubmit = async ({ name, price, description, brand, brandColor, brandTextColor, existingImages, newFiles }) => {
+  const handleSingleSubmit = async (raw) => {
+    const { data, errors } = validateProductPayload(raw);
+    if (errors.length) { setError(errors.join('\n')); return; }
     setSubmitting(true);
     setError('');
     try {
+      const { valid: validFiles, errors: fileErrs } = validateImageFiles(raw.newFiles || []);
+      if (fileErrs.length) { setError(fileErrs.join('\n')); setSubmitting(false); return; }
       const uploadedUrls = [];
-      for (const file of newFiles) uploadedUrls.push(await uploadToCloudinary(file));
-      await addProduct({ name, price, description, brand, brandColor, brandTextColor, images: [...existingImages, ...uploadedUrls] });
-      setToast('✅ เพิ่มสินค้าเรียบร้อยแล้ว!');
+      for (const file of validFiles) uploadedUrls.push(await uploadToCloudinary(file));
+      await addProduct({ ...data, images: [...(raw.existingImages || []), ...uploadedUrls] });
+      setToast('เพิ่มสินค้าเรียบร้อยแล้ว');
       setTimeout(() => router.push('/admin'), 1500);
     } catch (e) {
       setError(`เกิดข้อผิดพลาด: ${e.message}`);
@@ -52,18 +57,18 @@ export default function NewProductPage() {
     setSubmitting(true);
     setError('');
     try {
+      let saved = 0;
       for (const item of bulkItems) {
         if (!item.name || !item.price) continue;
+        const { data, errors } = validateProductPayload(item);
+        if (errors.length) { setError(`รายการบางชิ้น: ${errors.join(', ')}`); continue; }
+        const { valid: validFiles } = validateImageFiles(item.newFiles || []);
         const uploadedUrls = [];
-        for (const file of (item.newFiles || [])) uploadedUrls.push(await uploadToCloudinary(file));
-        await addProduct({
-          name: item.name, price: Number(item.price),
-          description: item.description, brand: item.brand,
-          brandColor: item.brandColor, brandTextColor: item.brandTextColor,
-          images: uploadedUrls,
-        });
+        for (const file of validFiles) uploadedUrls.push(await uploadToCloudinary(file));
+        await addProduct({ ...data, images: uploadedUrls });
+        saved++;
       }
-      setToast(`✅ เพิ่ม ${bulkItems.filter(i => i.name).length} สินค้าเรียบร้อย!`);
+      setToast(`เพิ่ม ${saved} สินค้าเรียบร้อย`);
       setTimeout(() => router.push('/admin'), 1500);
     } catch (e) {
       setError(`เกิดข้อผิดพลาด: ${e.message}`);

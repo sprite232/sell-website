@@ -1,6 +1,7 @@
 'use client';
 import { useState, useRef } from 'react';
 import Icon from '@/components/Icon';
+import { validateImageFiles } from '@/lib/validate';
 
 // Predefined brand colors for stickers
 const BRAND_COLORS = [
@@ -30,6 +31,7 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
   const [newFiles, setNewFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [dragging, setDragging] = useState(false);
+  const [fileErrors, setFileErrors] = useState([]);
   const [customBrand, setCustomBrand] = useState(
     initialData.brand && !BRAND_COLORS.find(b => b.label === initialData.brand)
       ? initialData.brand : ''
@@ -38,8 +40,10 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
 
   const handleFiles = (files) => {
     const arr = Array.from(files);
-    setNewFiles((prev) => [...prev, ...arr]);
-    arr.forEach((f) => {
+    const { valid, errors } = validateImageFiles(arr);
+    setFileErrors(errors);
+    setNewFiles((prev) => [...prev, ...valid]);
+    valid.forEach((f) => {
       const reader = new FileReader();
       reader.onload = (e) => setPreviews((prev) => [...prev, e.target.result]);
       reader.readAsDataURL(f);
@@ -71,20 +75,23 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
     onSubmit({ name, price: Number(price), description, status, size, brand: finalBrand, brandColor, brandTextColor, existingImages, newFiles });
   };
 
+  const handleInput = useRef(null);
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} noValidate>
       {/* Product Name */}
       <div className="form-group">
         <label className="form-label" htmlFor="prod-name">ชื่อสินค้า *</label>
         <input id="prod-name" type="text" className="form-input" value={name}
-          onChange={(e) => setName(e.target.value)} placeholder="เช่น Oversized Tee สีดำ" required />
+          onChange={(e) => setName(e.target.value)} placeholder="เช่น Oversized Tee สีดำ"
+          required maxLength={120} />
       </div>
 
       {/* Price */}
       <div className="form-group">
         <label className="form-label" htmlFor="prod-price">ราคา (฿) *</label>
-        <input id="prod-price" type="number" min="0" className="form-input" value={price}
+        <input id="prod-price" type="number" min="1" max="999999" step="1" className="form-input" value={price}
           onChange={(e) => setPrice(e.target.value)} placeholder="590" required />
+        <p style={{ fontSize: '0.72rem', color: 'var(--fg-muted)', marginTop: '4px' }}>1 – 999,999 บาท</p>
       </div>
 
       {/* Size */}
@@ -206,7 +213,8 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
         <label className="form-label" htmlFor="prod-desc">รายละเอียดสินค้า</label>
         <textarea id="prod-desc" className="form-textarea" value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="อธิบายสินค้า วัสดุ ไซส์ที่มี สภาพสินค้า ฯลฯ" rows={4} />
+          placeholder="อธิบายสินค้า วัสดุ ไซส์ที่มี สภาพสินค้า ฯลฯ" rows={4} maxLength={1000} />
+        <p style={{ fontSize: '0.72rem', color: 'var(--fg-muted)', marginTop: '4px' }}>{description.length}/1000</p>
       </div>
 
       {/* Image Upload */}
@@ -223,8 +231,19 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
             <Icon name="camera" size={32} style={{ opacity: 0.4 }} />
           </div>
           <p className="upload-zone-text">คลิกหรือลากรูปมาวางที่นี่</p>
-          <p className="upload-zone-hint">JPG, PNG, WEBP — ไม่จำกัดจำนวน</p>
+          <p className="upload-zone-hint">JPG, PNG, WEBP — ไม่เกิน 10MB ต่อรูป</p>
         </div>
+
+        {/* File validation errors */}
+        {fileErrors.length > 0 && (
+          <div style={{ marginTop: '8px' }}>
+            {fileErrors.map((err, i) => (
+              <p key={i} style={{ fontSize: '0.78rem', color: '#ff3b30', marginBottom: '4px', fontFamily: 'Prompt, sans-serif' }}>
+                {err}
+              </p>
+            ))}
+          </div>
+        )}
         <input ref={fileRef} type="file" accept="image/*" multiple
           style={{ display: 'none' }} onChange={(e) => handleFiles(e.target.files)} />
 
