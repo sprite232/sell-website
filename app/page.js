@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import ProductCard from '@/components/ProductCard';
 import ScrollReveal from '@/components/ScrollReveal';
+import Icon from '@/components/Icon';
 import { getProducts, getActiveAnnouncements } from '@/lib/firestore';
 
 export default function HomePage() {
@@ -10,6 +11,7 @@ export default function HomePage() {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading]         = useState(true);
   const [activeBrand, setActiveBrand] = useState('ทั้งหมด');
+  const [activeSize, setActiveSize]   = useState('');
   const [annIdx, setAnnIdx]           = useState(0);
 
   useEffect(() => {
@@ -26,6 +28,8 @@ export default function HomePage() {
   }, [announcements.length]);
 
   const publicProducts = products.filter(p => p.status !== 'draft');
+
+  // Brand counts
   const brandMap = {};
   publicProducts.forEach(p => {
     const b = p.brand || 'ไม่ระบุแบรนด์';
@@ -33,9 +37,19 @@ export default function HomePage() {
   });
   const brands = Object.entries(brandMap).sort((a, b) => b[1] - a[1]);
 
-  const filtered = activeBrand === 'ทั้งหมด'
+  // Available sizes (from products that have size set)
+  const sizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Free Size'];
+  const availableSizes = sizeOrder.filter(s =>
+    publicProducts.some(p => p.size === s && p.status !== 'sold')
+  );
+
+  // Filter by brand then size
+  let filtered = activeBrand === 'ทั้งหมด'
     ? publicProducts
     : publicProducts.filter(p => (p.brand || 'ไม่ระบุแบรนด์') === activeBrand);
+  if (activeSize) {
+    filtered = filtered.filter(p => p.size === activeSize);
+  }
 
   const ann = announcements[annIdx];
 
@@ -44,11 +58,11 @@ export default function HomePage() {
       <Navbar />
       <ScrollReveal />
 
-      {/* ─── Announcement Banner ─── */}
+      {/* Announcement Banner */}
       {ann && (
         <div className="announcement-banner"
           style={{ background: ann.bgColor || '#ff3b30', color: ann.textColor || '#fff' }}>
-          <span className="announcement-text">{ann.emoji} {ann.message}</span>
+          <span className="announcement-text">{ann.message}</span>
           {announcements.length > 1 && (
             <span className="announcement-dots">
               {announcements.map((_, i) => (
@@ -61,17 +75,22 @@ export default function HomePage() {
       )}
 
       <main>
-        {/* ─── Hero ─── */}
+        {/* Hero */}
         <section className="hero">
           <div className="container">
             <div className="hero-grid">
-              {/* Left: Text */}
               <div className="hero-text-col">
-                {/* Casual chips row */}
+                {/* Icon chips — no emoji */}
                 <div className="hero-chips">
-                  <span className="hero-chip hero-chip--pink">✨ ของแท้ 100%</span>
-                  <span className="hero-chip hero-chip--blue">👕 มือ 1-2</span>
-                  <span className="hero-chip hero-chip--green">🏷️ ราคาดี</span>
+                  <span className="hero-chip hero-chip--pink">
+                    <Icon name="badgeCheck" size={14} /> ของแท้ 100%
+                  </span>
+                  <span className="hero-chip hero-chip--blue">
+                    <Icon name="tag" size={14} /> มือ 1-2
+                  </span>
+                  <span className="hero-chip hero-chip--green">
+                    <Icon name="coins" size={14} /> ราคาดี
+                  </span>
                 </div>
 
                 <h1 className="hero-title-casual">
@@ -81,10 +100,9 @@ export default function HomePage() {
 
                 <p className="hero-subtitle-casual">
                   เสื้อผ้าคัดสรรมาดีๆ ของแท้ทุกชิ้น<br />
-                  ถามก่อนได้เลย ไม่กัด 😄 DM มาเลย!
+                  ถามก่อนได้เลย ไม่กัด — DM มาเลย!
                 </p>
 
-                {/* IG CTA — gradient animated */}
                 <a
                   href="https://www.instagram.com/sell_second_hand_clothes.th"
                   target="_blank"
@@ -93,21 +111,19 @@ export default function HomePage() {
                   id="hero-ig-cta"
                 >
                   <span className="btn-ig-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                      <circle cx="12" cy="12" r="4"/>
-                      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" strokeWidth="0"/>
-                    </svg>
+                    <Icon name="instagram" size={22} />
                   </span>
                   <span className="btn-ig-text">
-                    <span className="btn-ig-main">DM สั่งซื้อเลย!</span>
+                    <span className="btn-ig-main">DM สั่งซื้อเลย</span>
                     <span className="btn-ig-sub">@sell_second_hand_clothes.th</span>
                   </span>
-                  <span className="btn-ig-arrow">→</span>
+                  <span className="btn-ig-arrow">
+                    <Icon name="arrowRight" size={18} />
+                  </span>
                 </a>
               </div>
 
-              {/* Right: 3D Logo */}
+              {/* 3D Logo */}
               <div className="hero-logo-col">
                 <div className="logo-3d-wrapper">
                   <div className="logo-3d-spin">
@@ -118,74 +134,89 @@ export default function HomePage() {
                       <img src="/logo.png" alt="Su Sell Second hand" className="logo-img logo-img-back" />
                     </div>
                   </div>
-                  <div className="logo-badge logo-badge-1">ของแท้ ✓</div>
-                  <div className="logo-badge logo-badge-2">มือ 1-2 ✓</div>
-                  <div className="logo-badge logo-badge-3">DM สั่งได้ ✓</div>
+                  <div className="logo-badge logo-badge-1">ของแท้</div>
+                  <div className="logo-badge logo-badge-2">มือ 1-2</div>
+                  <div className="logo-badge logo-badge-3">DM ได้เลย</div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ─── IG Contact Strip ─── */}
+        {/* IG Contact Strip */}
         <section className="ig-strip reveal-section">
           <div className="container">
             <div className="ig-strip-inner">
               <div className="ig-strip-left">
                 <div className="ig-avatar-pulse">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                    <circle cx="12" cy="12" r="4"/>
-                    <circle cx="17.5" cy="6.5" r="1" fill="currentColor" strokeWidth="0"/>
-                  </svg>
+                  <Icon name="instagram" size={24} />
                 </div>
                 <div>
                   <p className="ig-strip-name">@sell_second_hand_clothes.th</p>
-                  <p className="ig-strip-desc">ทักมาได้เลย ตอบไว ไม่ต้องรอนาน 💬</p>
+                  <p className="ig-strip-desc">ทักมาได้เลย ตอบไว ไม่ต้องรอนาน</p>
                 </div>
               </div>
-              <a
-                href="https://www.instagram.com/sell_second_hand_clothes.th"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ig-strip-btn"
-              >
-                ไปที่ IG →
+              <a href="https://www.instagram.com/sell_second_hand_clothes.th"
+                target="_blank" rel="noopener noreferrer"
+                className="ig-strip-btn">
+                ไปที่ IG <Icon name="arrowRight" size={14} />
               </a>
             </div>
           </div>
         </section>
 
-        {/* ─── Brand Filter ─── */}
+        {/* Brand Filter */}
         {!loading && brands.length > 0 && (
-          <section style={{ borderBottom: '1px solid var(--border)' }}>
+          <section className="filter-section">
             <div className="container">
-              <div className="brand-filter-bar">
-                <button
-                  className={`brand-filter-btn ${activeBrand === 'ทั้งหมด' ? 'active' : ''}`}
-                  onClick={() => setActiveBrand('ทั้งหมด')}
-                >
-                  ทั้งหมด <span className="brand-filter-count">{publicProducts.length}</span>
-                </button>
-                {brands.map(([b, count]) => (
-                  <button key={b}
-                    className={`brand-filter-btn ${activeBrand === b ? 'active' : ''}`}
-                    onClick={() => setActiveBrand(b)}
+              <div className="filter-row">
+                {/* Brand pills */}
+                <div className="brand-filter-bar">
+                  <button
+                    className={`brand-filter-btn ${activeBrand === 'ทั้งหมด' ? 'active' : ''}`}
+                    onClick={() => setActiveBrand('ทั้งหมด')}
                   >
-                    {b} <span className="brand-filter-count">{count}</span>
+                    ทั้งหมด <span className="brand-filter-count">{publicProducts.length}</span>
                   </button>
-                ))}
+                  {brands.map(([b, count]) => (
+                    <button key={b}
+                      className={`brand-filter-btn ${activeBrand === b ? 'active' : ''}`}
+                      onClick={() => setActiveBrand(b)}
+                    >
+                      {b} <span className="brand-filter-count">{count}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Size pills */}
+                {availableSizes.length > 0 && (
+                  <div className="size-filter-bar">
+                    <span className="size-filter-label">
+                      <Icon name="ruler" size={14} />
+                      ไซส์
+                    </span>
+                    {availableSizes.map(s => (
+                      <button key={s}
+                        className={`size-filter-btn ${activeSize === s ? 'active' : ''}`}
+                        onClick={() => setActiveSize(activeSize === s ? '' : s)}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </section>
         )}
 
-        {/* ─── Product Grid ─── */}
+        {/* Product Grid */}
         <section className="product-grid-section reveal-section">
           <div className="container">
             <div className="section-header">
               <h2 className="section-title-casual">
-                {activeBrand === 'ทั้งหมด' ? 'สินค้าทั้งหมด' : `แบรนด์: ${activeBrand}`}
+                {activeBrand === 'ทั้งหมด' ? 'สินค้าทั้งหมด' : activeBrand}
+                {activeSize && <span className="size-filter-active-label">· ไซส์ {activeSize}</span>}
               </h2>
               {!loading && <span className="section-count">{filtered.length} รายการ</span>}
             </div>
@@ -202,13 +233,13 @@ export default function HomePage() {
               </div>
             ) : filtered.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-state-icon">👗</div>
-                <h3 className="empty-state-title">ยังไม่มีสินค้าในหมวดนี้</h3>
-                <p className="empty-state-desc">ติดตามสินค้าใหม่ได้ที่ IG ร้านเลย!</p>
+                <Icon name="tag" size={48} style={{ opacity: 0.15, marginBottom: '16px' }} />
+                <h3 className="empty-state-title">ไม่มีสินค้าในหมวดนี้</h3>
+                <p className="empty-state-desc">ลองเปลี่ยนตัวกรอง หรือติดตามสินค้าใหม่ที่ IG</p>
                 <a href="https://www.instagram.com/sell_second_hand_clothes.th"
                   target="_blank" rel="noopener noreferrer"
                   className="ig-strip-btn" style={{ marginTop: '20px', display: 'inline-flex' }}>
-                  ดู IG ร้าน →
+                  ดู IG ร้าน <Icon name="arrowRight" size={14} />
                 </a>
               </div>
             ) : (
@@ -220,19 +251,15 @@ export default function HomePage() {
         </section>
       </main>
 
-      {/* ─── Footer ─── */}
+      {/* Footer */}
       <footer className="footer">
         <div className="container">
           <div className="footer-inner">
-            <span className="footer-copy">© 2026 Su Sell Second hand 🧡</span>
+            <span className="footer-copy">© 2026 Su Sell Second hand</span>
             <a href="https://www.instagram.com/sell_second_hand_clothes.th"
               target="_blank" rel="noopener noreferrer"
               className="footer-ig-link">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                <circle cx="12" cy="12" r="4"/>
-                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" strokeWidth="0"/>
-              </svg>
+              <Icon name="instagram" size={15} />
               @sell_second_hand_clothes.th
             </a>
           </div>

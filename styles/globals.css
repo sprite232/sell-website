@@ -2126,3 +2126,121 @@ h1, h2, h3, h4 {
   font-family: 'Prompt', sans-serif;
 }
 
+
+/* ========================
+   NEW ARRIVAL BADGE
+   ======================== */
+.new-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #ff2d92;
+  color: #fff;
+  font-family: "Prompt", sans-serif;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 3px 9px 3px 7px;
+  border-radius: 999px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 8px rgba(255,45,146,0.35);
+}
+
+/* SIZE BADGE ON CARD */
+.size-badge {
+  display: inline-block;
+  font-family: "Prompt", sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--fg-muted);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  padding: 1px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  letter-spacing: 0.06em;
+}
+
+/* SIZE CHIP IN ADMIN FORM */
+.size-chip {
+  font-family: "Prompt", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--fg);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  letter-spacing: 0.04em;
+}
+.size-chip:hover { border-color: var(--fg); }
+.size-chip--active { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+
+/* FILTER SECTION */
+.filter-section { border-bottom: 1px solid var(--border); }
+.filter-row { display: flex; flex-direction: column; gap: 0; }
+
+/* SIZE FILTER BAR */
+.size-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.size-filter-label {
+  display: flex; align-items: center; gap: 4px;
+  font-family: "Prompt", sans-serif; font-size: 0.75rem;
+  color: var(--fg-muted); font-weight: 600; margin-right: 4px; flex-shrink: 0;
+}
+.size-filter-btn {
+  font-family: "Prompt", sans-serif; font-size: 0.78rem; font-weight: 600;
+  padding: 4px 14px; border-radius: 6px; border: 1.5px solid var(--border);
+  background: transparent; color: var(--fg-muted); cursor: pointer;
+  transition: all 0.18s ease; letter-spacing: 0.04em;
+}
+.size-filter-btn:hover { border-color: var(--fg); color: var(--fg); }
+.size-filter-btn.active { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.size-filter-active-label { font-size: 0.8rem; color: var(--fg-muted); font-weight: 400; margin-left: 8px; }
+
+/* HOW TO ORDER PAGE */
+.how-steps { display: flex; flex-direction: column; gap: 0; }
+.how-step {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 20px 0; border-bottom: 1px solid var(--border);
+}
+.how-step:last-child { border-bottom: none; }
+.how-step-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--fg); color: var(--bg);
+  font-family: "Prompt", sans-serif; font-size: 0.78rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.how-step-icon {
+  width: 40px; height: 40px; border-radius: var(--radius);
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--fg);
+}
+.how-step-body { flex: 1; padding-top: 4px; }
+.how-step-title { font-family: "Prompt", sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--fg); margin-bottom: 4px; }
+.how-step-desc { font-family: "Prompt", sans-serif; font-size: 0.85rem; color: var(--fg-muted); line-height: 1.6; }
+.how-cta-box {
+  margin-top: 40px; padding: 32px;
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); text-align: center;
+}
+.faq-list { display: flex; flex-direction: column; gap: 0; }
+.faq-item { padding: 16px 0; border-bottom: 1px solid var(--border); }
+.faq-item:last-child { border-bottom: none; }
+.faq-q {
+  font-family: "Prompt", sans-serif; font-size: 0.9rem; font-weight: 700;
+  color: var(--fg); margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+}
+.faq-a { font-family: "Prompt", sans-serif; font-size: 0.85rem; color: var(--fg-muted); line-height: 1.65; padding-left: 24px; }

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import ThemeToggle from '@/components/ThemeToggle';
+import Icon from '@/components/Icon';
 
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
@@ -14,10 +15,10 @@ export default function AdminLayout({ children }) {
   };
 
   const navItems = [
-    { href: '/admin', label: 'สินค้าทั้งหมด', icon: '📦' },
-    { href: '/admin/new', label: 'เพิ่มสินค้า', icon: '➕' },
-    { href: '/admin/announcements', label: 'ประกาศ / แบนเนอร์', icon: '📢' },
-    { href: '/', label: 'ดูหน้าเว็บหลัก', icon: '🌐' },
+    { href: '/admin',               label: 'สินค้าทั้งหมด',       icon: 'box'       },
+    { href: '/admin/new',           label: 'เพิ่มสินค้า',         icon: 'plus'      },
+    { href: '/admin/announcements', label: 'ประกาศ / แบนเนอร์', icon: 'megaphone' },
+    { href: '/',                    label: 'ดูหน้าเว็บหลัก',   icon: 'globe'     },
   ];
 
   // Allow login page to render without auth guard
@@ -45,7 +46,7 @@ export default function AdminLayout({ children }) {
                     : ''
                 }`}
               >
-                <span>{item.icon}</span>
+                <Icon name={item.icon} size={16} />
                 <span>{item.label}</span>
               </Link>
             ))}

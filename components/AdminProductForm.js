@@ -1,5 +1,6 @@
 'use client';
 import { useState, useRef } from 'react';
+import Icon from '@/components/Icon';
 
 // Predefined brand colors for stickers
 const BRAND_COLORS = [
@@ -21,6 +22,7 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
   const [price, setPrice] = useState(initialData.price || '');
   const [description, setDescription] = useState(initialData.description || '');
   const [status, setStatus] = useState(initialData.status || 'available');
+  const [size, setSize] = useState(initialData.size || '');
   const [brand, setBrand] = useState(initialData.brand || '');
   const [brandColor, setBrandColor] = useState(initialData.brandColor || '#000000');
   const [brandTextColor, setBrandTextColor] = useState(initialData.brandTextColor || '#ffffff');
@@ -66,7 +68,7 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
   const handleSubmit = (e) => {
     e.preventDefault();
     const finalBrand = customBrand || brand;
-    onSubmit({ name, price: Number(price), description, status, brand: finalBrand, brandColor, brandTextColor, existingImages, newFiles });
+    onSubmit({ name, price: Number(price), description, status, size, brand: finalBrand, brandColor, brandTextColor, existingImages, newFiles });
   };
 
   return (
@@ -83,6 +85,28 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
         <label className="form-label" htmlFor="prod-price">ราคา (฿) *</label>
         <input id="prod-price" type="number" min="0" className="form-input" value={price}
           onChange={(e) => setPrice(e.target.value)} placeholder="590" required />
+      </div>
+
+      {/* Size */}
+      <div className="form-group">
+        <label className="form-label">ไซส์สินค้า</label>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Free Size'].map(s => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setSize(size === s ? '' : s)}
+              className={`size-chip ${size === s ? 'size-chip--active' : ''}`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+        {size && (
+          <p style={{ fontSize: '0.75rem', color: 'var(--fg-muted)', marginTop: '6px' }}>
+            เลือกไว้: <strong>{size}</strong> — คลิกอีกครั้งเพื่อยกเลิก
+          </p>
+        )}
       </div>
 
       {/* Brand Tag / Sticker */}
@@ -155,19 +179,25 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
       <div className="form-group">
         <label className="form-label">สถานะสินค้า</label>
         <div style={{ display: 'flex', gap: '8px' }}>
-          {[
-            { value: 'available', label: '🟢 เผยแพร์ (ขายอยู่)' },
-            { value: 'draft',     label: '✏️ ฝับร่าง (ยังไม่แสดง)' },
-          ].map(opt => (
-            <button key={opt.value} type="button"
-              onClick={() => setStatus(opt.value)}
-              className={`btn btn-sm ${status === opt.value ? 'btn-primary' : 'btn-ghost'}`}>
-              {opt.label}
-            </button>
-          ))}
+          <button type="button"
+            onClick={() => setStatus('available')}
+            className={`btn btn-sm ${status === 'available' ? 'btn-primary' : 'btn-ghost'}`}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            <Icon name="circleDot" size={14} />
+            เผยแพร่ (ขายอยู่)
+          </button>
+          <button type="button"
+            onClick={() => setStatus('draft')}
+            className={`btn btn-sm ${status === 'draft' ? 'btn-primary' : 'btn-ghost'}`}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            <Icon name="pencil" size={14} />
+            ฉบับร่าง
+          </button>
         </div>
         <p style={{ fontSize: '0.75rem', color: 'var(--fg-muted)', marginTop: '6px' }}>
-          ฝับร่าง = บันทึกไว้ก่อน ไม่แสดงในหน้าเว็บ แอดมินสามารถเปลี่ยนได้ภายหลัง
+          ฉบับร่าง = บันทึกไว้ก่อน ไม่แสดงในหน้าเว็บ แอดมินสามารถเปลี่ยนได้ภายหลัง
         </p>
       </div>
 
@@ -189,7 +219,9 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
           onDragLeave={() => setDragging(false)}
           onDrop={handleDrop}
         >
-          <div className="upload-zone-icon">📷</div>
+          <div className="upload-zone-icon">
+            <Icon name="camera" size={32} style={{ opacity: 0.4 }} />
+          </div>
           <p className="upload-zone-text">คลิกหรือลากรูปมาวางที่นี่</p>
           <p className="upload-zone-hint">JPG, PNG, WEBP — ไม่จำกัดจำนวน</p>
         </div>
@@ -203,7 +235,9 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
               {existingImages.map((url, i) => (
                 <div key={i} className="preview-item">
                   <img src={url} alt={`Existing ${i}`} />
-                  <button type="button" className="preview-item-remove" onClick={() => removeExisting(i)}>✕</button>
+                  <button type="button" className="preview-item-remove" onClick={() => removeExisting(i)}>
+                    <Icon name="x" size={12} />
+                  </button>
                 </div>
               ))}
             </div>
@@ -219,7 +253,9 @@ export default function AdminProductForm({ initialData = {}, onSubmit, submittin
               {previews.map((src, i) => (
                 <div key={i} className="preview-item">
                   <img src={src} alt={`Preview ${i}`} />
-                  <button type="button" className="preview-item-remove" onClick={() => removeNew(i)}>✕</button>
+                  <button type="button" className="preview-item-remove" onClick={() => removeNew(i)}>
+                    <Icon name="x" size={12} />
+                  </button>
                 </div>
               ))}
             </div>
