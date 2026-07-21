@@ -1,11 +1,21 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import ProductCard from '@/components/ProductCard';
-import ScrollReveal from '@/components/ScrollReveal';
 import BackToTop from '@/components/BackToTop';
 import Icon from '@/components/Icon';
 import { getProducts, getActiveAnnouncements } from '@/lib/firestore';
+import {
+  FadeInUp,
+  FadeInLeft,
+  FadeInRight,
+  ScrollReveal,
+  StaggerContainer,
+  StaggerItem,
+  Floating,
+  PulseGlow,
+} from '@/components/MotionWrapper';
 
 export default function HomePage() {
   const [products, setProducts]       = useState([]);
@@ -72,20 +82,34 @@ export default function HomePage() {
       <ScrollReveal />
 
       {/* Announcement Banner */}
-      {ann && (
-        <div className="announcement-banner"
-          style={{ background: ann.bgColor || '#ff3b30', color: ann.textColor || '#fff' }}>
-          <span className="announcement-text">{ann.message}</span>
-          {announcements.length > 1 && (
-            <span className="announcement-dots">
-              {announcements.map((_, i) => (
-                <span key={i} onClick={() => setAnnIdx(i)}
-                  className={`ann-dot ${i === annIdx ? 'active' : ''}`} />
-              ))}
-            </span>
-          )}
-        </div>
-      )}
+      <AnimatePresence mode="wait">
+        {ann && (
+          <motion.div
+            key={annIdx}
+            className="announcement-banner"
+            style={{ background: ann.bgColor || '#ff3b30', color: ann.textColor || '#fff' }}
+            initial={{ y: -60, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -60, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          >
+            <span className="announcement-text">{ann.message}</span>
+            {announcements.length > 1 && (
+              <span className="announcement-dots">
+                {announcements.map((_, i) => (
+                  <motion.span
+                    key={i}
+                    onClick={() => setAnnIdx(i)}
+                    className={`ann-dot ${i === annIdx ? 'active' : ''}`}
+                    whileHover={{ scale: 1.3 }}
+                    whileTap={{ scale: 0.9 }}
+                  />
+                ))}
+              </span>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <main>
         {/* Hero */}
@@ -93,214 +117,312 @@ export default function HomePage() {
           <div className="container">
             <div className="hero-grid">
               <div className="hero-text-col">
-                {/* Icon chips — no emoji */}
-                <div className="hero-chips">
-                  <span className="hero-chip hero-chip--pink">
-                    <Icon name="badgeCheck" size={14} /> ของแท้ 100%
-                  </span>
-                  <span className="hero-chip hero-chip--blue">
-                    <Icon name="tag" size={14} /> มือ 1-2
-                  </span>
-                  <span className="hero-chip hero-chip--green">
-                    <Icon name="coins" size={14} /> ราคาดี
-                  </span>
-                </div>
+                {/* Icon chips */}
+                <FadeInUp delay={0.1}>
+                  <div className="hero-chips">
+                    <motion.span
+                      className="hero-chip hero-chip--pink"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                    >
+                      <Icon name="badgeCheck" size={14} /> ของแท้ 100%
+                    </motion.span>
+                    <motion.span
+                      className="hero-chip hero-chip--blue"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                    >
+                      <Icon name="tag" size={14} /> มือ 1-2
+                    </motion.span>
+                    <motion.span
+                      className="hero-chip hero-chip--green"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                    >
+                      <Icon name="coins" size={14} /> ราคาดี
+                    </motion.span>
+                  </div>
+                </FadeInUp>
 
-                <h1 className="hero-title-casual">
-                  Su Sell<br />
-                  <span className="hero-title-accent">Second hand</span>
-                </h1>
+                <FadeInUp delay={0.2}>
+                  <h1 className="hero-title-casual">
+                    Su Sell<br />
+                    <span className="hero-title-accent">Second hand</span>
+                  </h1>
+                </FadeInUp>
 
-                <p className="hero-subtitle-casual">
-                  เสื้อผ้าคัดสรรมาดีๆ ของแท้ทุกชิ้น<br />
-                  ถามก่อนได้เลย ไม่กัด — DM มาเลย!
-                </p>
+                <FadeInUp delay={0.3}>
+                  <p className="hero-subtitle-casual">
+                    เสื้อผ้าคัดสรรมาดีๆ ของแท้ทุกชิ้น<br />
+                    ถามก่อนได้เลย ไม่กัด — DM มาเลย!
+                  </p>
+                </FadeInUp>
 
-                <a
-                  href="https://www.instagram.com/sell_second_hand_clothes.th"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-ig-hero"
-                  id="hero-ig-cta"
-                >
-                  <span className="btn-ig-icon">
-                    <Icon name="instagram" size={22} />
-                  </span>
-                  <span className="btn-ig-text">
-                    <span className="btn-ig-main">DM สั่งซื้อเลย</span>
-                    <span className="btn-ig-sub">@sell_second_hand_clothes.th</span>
-                  </span>
-                  <span className="btn-ig-arrow">
-                    <Icon name="arrowRight" size={18} />
-                  </span>
-                </a>
+                <FadeInUp delay={0.4}>
+                  <PulseGlow>
+                    <motion.a
+                      href="https://www.instagram.com/sell_second_hand_clothes.th"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-ig-hero"
+                      id="hero-ig-cta"
+                      whileHover={{ scale: 1.03, y: -3 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <span className="btn-ig-icon">
+                        <Icon name="instagram" size={22} />
+                      </span>
+                      <span className="btn-ig-text">
+                        <span className="btn-ig-main">DM สั่งซื้อเลย</span>
+                        <span className="btn-ig-sub">@sell_second_hand_clothes.th</span>
+                      </span>
+                      <motion.span
+                        className="btn-ig-arrow"
+                        animate={{ x: [0, 4, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      >
+                        <Icon name="arrowRight" size={18} />
+                      </motion.span>
+                    </motion.a>
+                  </PulseGlow>
+                </FadeInUp>
               </div>
 
               {/* 3D Logo */}
-              <div className="hero-logo-col">
-                <div className="logo-3d-wrapper">
-                  <div className="logo-3d-spin">
-                    <div className="logo-3d-front">
-                      <img src="/logo.png" alt="Su Sell Second hand" className="logo-img" />
+              <FadeInRight delay={0.3}>
+                <div className="hero-logo-col">
+                  <Floating duration={4}>
+                    <div className="logo-3d-wrapper">
+                      <div className="logo-3d-spin">
+                        <div className="logo-3d-front">
+                          <img src="/logo.png" alt="Su Sell Second hand" className="logo-img" />
+                        </div>
+                        <div className="logo-3d-back">
+                          <img src="/logo.png" alt="Su Sell Second hand" className="logo-img logo-img-back" />
+                        </div>
+                      </div>
+                      <motion.div
+                        className="logo-badge logo-badge-1"
+                        whileHover={{ scale: 1.1 }}
+                      >
+                        ของแท้
+                      </motion.div>
+                      <motion.div
+                        className="logo-badge logo-badge-2"
+                        whileHover={{ scale: 1.1 }}
+                      >
+                        มือ 1-2
+                      </motion.div>
+                      <motion.div
+                        className="logo-badge logo-badge-3"
+                        whileHover={{ scale: 1.1 }}
+                      >
+                        DM ได้เลย
+                      </motion.div>
                     </div>
-                    <div className="logo-3d-back">
-                      <img src="/logo.png" alt="Su Sell Second hand" className="logo-img logo-img-back" />
-                    </div>
-                  </div>
-                  <div className="logo-badge logo-badge-1">ของแท้</div>
-                  <div className="logo-badge logo-badge-2">มือ 1-2</div>
-                  <div className="logo-badge logo-badge-3">DM ได้เลย</div>
+                  </Floating>
                 </div>
-              </div>
+              </FadeInRight>
             </div>
           </div>
         </section>
 
         {/* IG Contact Strip */}
-        <section className="ig-strip reveal-section">
-          <div className="container">
-            <div className="ig-strip-inner">
-              <div className="ig-strip-left">
-                <div className="ig-avatar-pulse">
-                  <Icon name="instagram" size={24} />
-                </div>
-                <div>
-                  <p className="ig-strip-name">@sell_second_hand_clothes.th</p>
-                  <p className="ig-strip-desc">ทักมาได้เลย ตอบไว ไม่ต้องรอนาน</p>
-                </div>
-              </div>
-              <a href="https://www.instagram.com/sell_second_hand_clothes.th"
-                target="_blank" rel="noopener noreferrer"
-                className="ig-strip-btn">
-                ไปที่ IG <Icon name="arrowRight" size={14} />
-              </a>
-            </div>
-          </div>
-        </section>
-
-        {/* Brand Filter */}
-        {!loading && brands.length > 0 && (
-          <section className="filter-section">
+        <ScrollReveal>
+          <section className="ig-strip">
             <div className="container">
-              {/* Search Bar */}
-              <div style={{ padding: '16px 0 8px' }}>
-                <div className="search-bar">
-                  <input
-                    type="text"
-                    className="search-input"
-                    placeholder="ค้นหาสินค้า รหัส แบรนด์..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  <Icon name="search" size={18} className="search-icon" />
-                  {searchQuery && (
-                    <button
-                      className="search-clear"
-                      onClick={() => setSearchQuery('')}
-                      aria-label="ล้างการค้นหา"
-                    >
-                      <Icon name="x" size={12} />
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <div className="filter-row">
-                {/* Brand pills */}
-                <div className="brand-filter-bar">
-                  <button
-                    className={`brand-filter-btn ${activeBrand === 'ทั้งหมด' ? 'active' : ''}`}
-                    onClick={() => setActiveBrand('ทั้งหมด')}
+              <div className="ig-strip-inner">
+                <div className="ig-strip-left">
+                  <motion.div
+                    className="ig-avatar-pulse"
+                    whileHover={{ scale: 1.1 }}
                   >
-                    ทั้งหมด <span className="brand-filter-count">{publicProducts.length}</span>
-                  </button>
-                  {brands.map(([b, count]) => (
-                    <button key={b}
-                      className={`brand-filter-btn ${activeBrand === b ? 'active' : ''}`}
-                      onClick={() => setActiveBrand(b)}
-                    >
-                      {b} <span className="brand-filter-count">{count}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Size pills */}
-                {availableSizes.length > 0 && (
-                  <div className="size-filter-bar">
-                    <span className="size-filter-label">
-                      <Icon name="ruler" size={14} />
-                      ไซส์
-                    </span>
-                    {availableSizes.map(s => (
-                      <button key={s}
-                        className={`size-filter-btn ${activeSize === s ? 'active' : ''}`}
-                        onClick={() => setActiveSize(activeSize === s ? '' : s)}
-                      >
-                        {s}
-                      </button>
-                    ))}
+                    <Icon name="instagram" size={24} />
+                  </motion.div>
+                  <div>
+                    <p className="ig-strip-name">@sell_second_hand_clothes.th</p>
+                    <p className="ig-strip-desc">ทักมาได้เลย ตอบไว ไม่ต้องรอนาน</p>
                   </div>
-                )}
+                </div>
+                <motion.a
+                  href="https://www.instagram.com/sell_second_hand_clothes.th"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ig-strip-btn"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  ไปที่ IG <Icon name="arrowRight" size={14} />
+                </motion.a>
               </div>
             </div>
           </section>
+        </ScrollReveal>
+
+        {/* Brand Filter */}
+        {!loading && brands.length > 0 && (
+          <ScrollReveal>
+            <section className="filter-section">
+              <div className="container">
+                {/* Search Bar */}
+                <div style={{ padding: '16px 0 8px' }}>
+                  <motion.div
+                    className="search-bar"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <input
+                      type="text"
+                      className="search-input"
+                      placeholder="ค้นหาสินค้า รหัส แบรนด์..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <Icon name="search" size={18} className="search-icon" />
+                    <AnimatePresence>
+                      {searchQuery && (
+                        <motion.button
+                          className="search-clear"
+                          onClick={() => setSearchQuery('')}
+                          aria-label="ล้างการค้นหา"
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0 }}
+                        >
+                          <Icon name="x" size={12} />
+                        </motion.button>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                </div>
+
+                <div className="filter-row">
+                  {/* Brand pills */}
+                  <div className="brand-filter-bar">
+                    <motion.button
+                      className={`brand-filter-btn ${activeBrand === 'ทั้งหมด' ? 'active' : ''}`}
+                      onClick={() => setActiveBrand('ทั้งหมด')}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      ทั้งหมด <span className="brand-filter-count">{publicProducts.length}</span>
+                    </motion.button>
+                    {brands.map(([b, count]) => (
+                      <motion.button
+                        key={b}
+                        className={`brand-filter-btn ${activeBrand === b ? 'active' : ''}`}
+                        onClick={() => setActiveBrand(b)}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        {b} <span className="brand-filter-count">{count}</span>
+                      </motion.button>
+                    ))}
+                  </div>
+
+                  {/* Size pills */}
+                  {availableSizes.length > 0 && (
+                    <div className="size-filter-bar">
+                      <span className="size-filter-label">
+                        <Icon name="ruler" size={14} />
+                        ไซส์
+                      </span>
+                      {availableSizes.map(s => (
+                        <motion.button
+                          key={s}
+                          className={`size-filter-btn ${activeSize === s ? 'active' : ''}`}
+                          onClick={() => setActiveSize(activeSize === s ? '' : s)}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          {s}
+                        </motion.button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+          </ScrollReveal>
         )}
 
         {/* Product Grid */}
-        <section className="product-grid-section reveal-section">
+        <section className="product-grid-section">
           <div className="container">
-            <div className="section-header">
-              <h2 className="section-title-casual">
-                {activeBrand === 'ทั้งหมด' ? 'สินค้าทั้งหมด' : activeBrand}
-                {activeSize && <span className="size-filter-active-label">· ไซส์ {activeSize}</span>}
-              </h2>
-              {!loading && <span className="section-count">{filtered.length} รายการ</span>}
-            </div>
+            <ScrollReveal>
+              <div className="section-header">
+                <h2 className="section-title-casual">
+                  {activeBrand === 'ทั้งหมด' ? 'สินค้าทั้หมด' : activeBrand}
+                  {activeSize && <span className="size-filter-active-label">· ไซส์ {activeSize}</span>}
+                </h2>
+                {!loading && <span className="section-count">{filtered.length} รายการ</span>}
+              </div>
+            </ScrollReveal>
 
             {loading ? (
-              <div className="product-grid">
+              <StaggerContainer className="product-grid">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i}>
-                    <div className="skeleton" style={{ width: '100%', aspectRatio: '3/4', borderRadius: 'var(--radius-lg)' }} />
-                    <div className="skeleton" style={{ height: '20px', marginTop: '16px', width: '70%' }} />
-                    <div className="skeleton" style={{ height: '16px', marginTop: '8px', width: '40%' }} />
-                  </div>
+                  <StaggerItem key={i}>
+                    <div>
+                      <div className="skeleton" style={{ width: '100%', aspectRatio: '3/4', borderRadius: 'var(--radius-lg)' }} />
+                      <div className="skeleton" style={{ height: '20px', marginTop: '16px', width: '70%' }} />
+                      <div className="skeleton" style={{ height: '16px', marginTop: '8px', width: '40%' }} />
+                    </div>
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             ) : filtered.length === 0 ? (
-              <div className="empty-state">
+              <motion.div
+                className="empty-state"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
                 <Icon name="tag" size={48} style={{ opacity: 0.15, marginBottom: '16px' }} />
                 <h3 className="empty-state-title">ไม่มีสินค้าในหมวดนี้</h3>
                 <p className="empty-state-desc">ลองเปลี่ยนตัวกรอง หรือติดตามสินค้าใหม่ที่ IG</p>
-                <a href="https://www.instagram.com/sell_second_hand_clothes.th"
-                  target="_blank" rel="noopener noreferrer"
-                  className="ig-strip-btn" style={{ marginTop: '20px', display: 'inline-flex' }}>
+                <motion.a
+                  href="https://www.instagram.com/sell_second_hand_clothes.th"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ig-strip-btn"
+                  style={{ marginTop: '20px', display: 'inline-flex' }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   ดู IG ร้าน <Icon name="arrowRight" size={14} />
-                </a>
-              </div>
+                </motion.a>
+              </motion.div>
             ) : (
-              <div className="product-grid">
-                {filtered.map(p => <ProductCard key={p.id} product={p} />)}
-              </div>
+              <StaggerContainer className="product-grid">
+                {filtered.map(p => (
+                  <StaggerItem key={p.id}>
+                    <ProductCard product={p} />
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
             )}
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="footer">
-        <div className="container">
-          <div className="footer-inner">
-            <span className="footer-copy">© 2026 Su Sell Second hand</span>
-            <a href="https://www.instagram.com/sell_second_hand_clothes.th"
-              target="_blank" rel="noopener noreferrer"
-              className="footer-ig-link">
-              <Icon name="instagram" size={15} />
-              @sell_second_hand_clothes.th
-            </a>
+      <ScrollReveal>
+        <footer className="footer">
+          <div className="container">
+            <div className="footer-inner">
+              <span className="footer-copy">© 2026 Su Sell Second hand</span>
+              <motion.a
+                href="https://www.instagram.com/sell_second_hand_clothes.th"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-ig-link"
+                whileHover={{ scale: 1.05 }}
+              >
+                <Icon name="instagram" size={15} />
+                @sell_second_hand_clothes.th
+              </motion.a>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      </ScrollReveal>
 
       <BackToTop />
     </>

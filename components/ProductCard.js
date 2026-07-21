@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { useCart } from '@/contexts/CartContext';
 import { useFavorites } from '@/contexts/FavoritesContext';
 import Icon from '@/components/Icon';
@@ -48,17 +49,23 @@ export default function ProductCard({ product }) {
   const liked = isFavorite(id);
 
   return (
-    <div className="reveal-card">
+    <motion.div
+      className="reveal-card"
+      whileHover={{ y: -6 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+    >
       <Link href={`/products/${id}`} className={`product-card ${isSold ? 'product-card--sold' : ''}`}>
         <div className="product-card-image-wrapper">
           {/* Primary image */}
           {thumb ? (
-            <img
+            <motion.img
               src={thumb}
               alt={name}
               className={`product-card-image img-primary ${thumb2 && !isSold ? 'has-secondary' : ''}`}
               loading="lazy"
               style={{ filter: isSold ? 'grayscale(75%) brightness(0.65)' : 'none' }}
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.4 }}
             />
           ) : (
             <div className="product-card-image img-primary" style={{
@@ -78,7 +85,14 @@ export default function ProductCard({ product }) {
           {/* SOLD OUT ribbon */}
           {isSold && (
             <div className="sold-overlay">
-              <span className="sold-ribbon">SOLD OUT</span>
+              <motion.span
+                className="sold-ribbon"
+                initial={{ rotate: -25, scale: 0 }}
+                animate={{ rotate: -25, scale: 1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+              >
+                SOLD OUT
+              </motion.span>
             </div>
           )}
 
@@ -87,18 +101,31 @@ export default function ProductCard({ product }) {
 
           {/* NEW badge — auto, within 7 days */}
           {isNew && (
-            <span className="new-badge">
+            <motion.span
+              className="new-badge"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+            >
               <Icon name="sparkle" size={10} />
               ใหม่
-            </span>
+            </motion.span>
           )}
 
           {/* Brand Sticker — top right */}
           {brand && !isSold && (
-            <span className="brand-sticker" style={{
-              background: brandColor || '#000',
-              color: brandTextColor || '#fff',
-            }}>{brand}</span>
+            <motion.span
+              className="brand-sticker"
+              style={{
+                background: brandColor || '#000',
+                color: brandTextColor || '#fff',
+              }}
+              initial={{ x: 20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              {brand}
+            </motion.span>
           )}
 
           {/* Product Code — top left */}
@@ -106,25 +133,32 @@ export default function ProductCard({ product }) {
 
           {/* Favorite Button */}
           {!isDraft && (
-            <button
+            <motion.button
               className={`fav-btn ${liked ? 'fav-btn--active' : ''}`}
               onClick={handleToggleFavorite}
               aria-label={liked ? 'ลบออกจากรายการโปรด' : 'เพิ่มรายการโปรด'}
+              whileHover={{ scale: 1.2 }}
+              whileTap={{ scale: 0.85 }}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 15 }}
             >
               <Icon name={liked ? 'heartFilled' : 'heart'} size={16} />
-            </button>
+            </motion.button>
           )}
 
           {/* Quick Add to Cart — visible on hover (PC only via CSS) */}
           {!isSold && (
-            <button
+            <motion.button
               className={`card-cart-btn ${inCart ? 'card-cart-btn--in' : ''}`}
               onClick={handleAddToCart}
               aria-label={inCart ? 'อยู่ในตะกร้าแล้ว' : 'ใส่ตะกร้า'}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               <Icon name={inCart ? 'check' : 'bag'} size={13} />
               {inCart ? 'ในตะกร้าแล้ว' : 'ใส่ตะกร้า'}
-            </button>
+            </motion.button>
           )}
         </div>
 
@@ -133,7 +167,14 @@ export default function ProductCard({ product }) {
 
           {/* Size badge */}
           {size && !isSold && (
-            <span className="size-badge">{size}</span>
+            <motion.span
+              className="size-badge"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              {size}
+            </motion.span>
           )}
 
           <p className="product-card-price" style={{ opacity: isSold ? 0.45 : 1 }}>
@@ -143,6 +184,6 @@ export default function ProductCard({ product }) {
           {isSold && <p className="sold-tag-text">ขายแล้ว</p>}
         </div>
       </Link>
-    </div>
+    </motion.div>
   );
 }

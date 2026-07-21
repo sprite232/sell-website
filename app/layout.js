@@ -4,6 +4,7 @@ import { CartProvider } from '@/contexts/CartContext';
 import { FavoritesProvider } from '@/contexts/FavoritesContext';
 import CartDrawer from '@/components/CartDrawer';
 import CursorGlow from '@/components/CursorGlow';
+import ClientLayout from '@/components/ClientLayout';
 
 export const metadata = {
   title: 'Su Sell Second hand — เสื้อผ้ามือสอง ของแท้ 100%',
@@ -44,7 +45,9 @@ export default function RootLayout({ children }) {
           <FavoritesProvider>
             <CartProvider>
               <CursorGlow />
-              {children}
+              <ClientLayout>
+                {children}
+              </ClientLayout>
               <CartDrawer />
             </CartProvider>
           </FavoritesProvider>
