@@ -197,7 +197,7 @@ export default function AnnouncementAdminPage() {
                   {ann.emoji} {ann.message}
                 </p>
                 <p style={{ fontSize: '0.75rem', color: 'var(--fg-muted)', marginTop: '2px' }}>
-                  {ann.active ? '🟢 กำลังแสดง' : '⚫ ซ่อนอยู่'}
+                  {ann.active ? 'กำลังแสดง' : 'ซ่อนอยู่'}
                   {ann.type && ` · ${TYPE_OPTIONS.find(t => t.value === ann.type)?.label || ann.type}`}
                 </p>
               </div>
@@ -206,7 +206,7 @@ export default function AnnouncementAdminPage() {
               <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
                 <button onClick={() => toggleActive(ann)}
                   className={`btn btn-sm ${ann.active ? 'btn-ghost' : 'btn-outline'}`}>
-                  {ann.active ? '🙈 ซ่อน' : '👁️ แสดง'}
+                  {ann.active ? 'ซ่อน' : 'แสดง'}
                 </button>
                 <button onClick={() => handleDelete(ann.id)} className="btn btn-danger btn-sm">
                   ลบ

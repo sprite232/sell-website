@@ -107,11 +107,11 @@ export default function NewProductPage() {
         <div style={{ display: 'flex', gap: '8px' }}>
           <button onClick={() => setMode('single')}
             className={`btn btn-sm ${mode === 'single' ? 'btn-primary' : 'btn-ghost'}`}>
-            ➕ ทีละชิ้น
+            ทีละชิ้น
           </button>
           <button onClick={() => setMode('bulk')}
             className={`btn btn-sm ${mode === 'bulk' ? 'btn-primary' : 'btn-ghost'}`}>
-            📦 หลายชิ้น
+            หลายชิ้น
           </button>
         </div>
       </div>

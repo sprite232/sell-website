@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
+import { useFavorites } from '@/contexts/FavoritesContext';
 import Icon from '@/components/Icon';
 
 // Check if product is "new" — added within last 7 days
@@ -22,6 +23,7 @@ export default function ProductCard({ product }) {
   } = product;
 
   const { addToCart, isInCart } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   const thumb   = images?.[0] || null;
   const thumb2  = images?.[1] || null;
@@ -36,6 +38,14 @@ export default function ProductCard({ product }) {
     if (isSold || inCart) return;
     addToCart({ id, name, price, code, brand, brandColor, brandTextColor, image: thumb });
   };
+
+  const handleToggleFavorite = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleFavorite({ id, name, price, images, brand, brandColor, brandTextColor, code, status });
+  };
+
+  const liked = isFavorite(id);
 
   return (
     <div className="reveal-card">
@@ -93,6 +103,17 @@ export default function ProductCard({ product }) {
 
           {/* Product Code — top left */}
           {code && <span className="product-card-badge">{code}</span>}
+
+          {/* Favorite Button */}
+          {!isDraft && (
+            <button
+              className={`fav-btn ${liked ? 'fav-btn--active' : ''}`}
+              onClick={handleToggleFavorite}
+              aria-label={liked ? 'ลบออกจากรายการโปรด' : 'เพิ่มรายการโปรด'}
+            >
+              <Icon name={liked ? 'heartFilled' : 'heart'} size={16} />
+            </button>
+          )}
 
           {/* Quick Add to Cart — visible on hover (PC only via CSS) */}
           {!isSold && (

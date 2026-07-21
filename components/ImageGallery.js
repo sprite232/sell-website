@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Icon from './Icon';
 
 export default function ImageGallery({ images = [] }) {
   const [active, setActive] = useState(0);
@@ -15,9 +16,8 @@ export default function ImageGallery({ images = [] }) {
         alignItems: 'center',
         justifyContent: 'center',
         color: 'var(--fg-muted)',
-        fontSize: '2rem',
       }}>
-        📷
+        <Icon name="camera" size={40} style={{ opacity: 0.3 }} />
       </div>
     );
   }

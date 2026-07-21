@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import ProductCard from '@/components/ProductCard';
 import ScrollReveal from '@/components/ScrollReveal';
+import BackToTop from '@/components/BackToTop';
 import Icon from '@/components/Icon';
 import { getProducts, getActiveAnnouncements } from '@/lib/firestore';
 
@@ -12,6 +13,7 @@ export default function HomePage() {
   const [loading, setLoading]         = useState(true);
   const [activeBrand, setActiveBrand] = useState('ทั้งหมด');
   const [activeSize, setActiveSize]   = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [annIdx, setAnnIdx]           = useState(0);
 
   useEffect(() => {
@@ -49,6 +51,17 @@ export default function HomePage() {
     : publicProducts.filter(p => (p.brand || 'ไม่ระบุแบรนด์') === activeBrand);
   if (activeSize) {
     filtered = filtered.filter(p => p.size === activeSize);
+  }
+
+  // Search filter
+  if (searchQuery.trim()) {
+    const q = searchQuery.toLowerCase().trim();
+    filtered = filtered.filter(p =>
+      (p.name || '').toLowerCase().includes(q) ||
+      (p.code || '').toLowerCase().includes(q) ||
+      (p.brand || '').toLowerCase().includes(q) ||
+      (p.description || '').toLowerCase().includes(q)
+    );
   }
 
   const ann = announcements[annIdx];
@@ -169,6 +182,29 @@ export default function HomePage() {
         {!loading && brands.length > 0 && (
           <section className="filter-section">
             <div className="container">
+              {/* Search Bar */}
+              <div style={{ padding: '16px 0 8px' }}>
+                <div className="search-bar">
+                  <input
+                    type="text"
+                    className="search-input"
+                    placeholder="ค้นหาสินค้า รหัส แบรนด์..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  <Icon name="search" size={18} className="search-icon" />
+                  {searchQuery && (
+                    <button
+                      className="search-clear"
+                      onClick={() => setSearchQuery('')}
+                      aria-label="ล้างการค้นหา"
+                    >
+                      <Icon name="x" size={12} />
+                    </button>
+                  )}
+                </div>
+              </div>
+
               <div className="filter-row">
                 {/* Brand pills */}
                 <div className="brand-filter-bar">
@@ -265,6 +301,8 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      <BackToTop />
     </>
   );
 }

@@ -4,15 +4,21 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import ImageGallery from '@/components/ImageGallery';
+import Icon from '@/components/Icon';
+import SizeGuide from '@/components/SizeGuide';
 import { getProduct } from '@/lib/firestore';
 import { useCart } from '@/contexts/CartContext';
+import { useFavorites } from '@/contexts/FavoritesContext';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
   const { addToCart, isInCart } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   useEffect(() => {
     if (!id) return;
@@ -25,9 +31,27 @@ export default function ProductDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  const liked = product ? isFavorite(product.id) : false;
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    const text = `ดูสินค้านี้: ${product.name} ราคา ฿${Number(product.price).toLocaleString()}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: product.name, text, url });
+      } catch {}
+    } else {
+      await navigator.clipboard.writeText(`${text}\n${url}`);
+      alert('คัดลอกลิงก์แล้ว!');
+    }
+    setShowShareMenu(false);
+  };
+
   return (
     <>
       <Navbar />
+      <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} />
       <main>
         <div className="container">
           {loading ? (
@@ -45,10 +69,20 @@ export default function ProductDetailPage() {
             </div>
           ) : notFound ? (
             <div className="empty-state" style={{ padding: '120px 24px' }}>
-              <div className="empty-state-icon">🔍</div>
+              <div style={{
+                width: '80px', height: '80px', borderRadius: '50%',
+                background: 'var(--bg-secondary)', border: '2px dashed var(--border)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                margin: '0 auto 20px', color: 'var(--fg-muted)',
+              }}>
+                <Icon name="search" size={32} />
+              </div>
               <h2 className="empty-state-title">ไม่พบสินค้านี้</h2>
               <p className="empty-state-desc">สินค้าอาจถูกลบไปแล้ว หรือลิงก์อาจไม่ถูกต้อง</p>
-              <Link href="/" className="btn btn-outline">← กลับหน้าหลัก</Link>
+              <Link href="/" className="btn btn-outline" style={{ marginTop: '16px' }}>
+                <Icon name="arrowRight" size={16} style={{ transform: 'rotate(180deg)' }} />
+                กลับหน้าหลัก
+              </Link>
             </div>
           ) : product ? (
             <div className="product-detail">
@@ -74,7 +108,7 @@ export default function ProductDetailPage() {
                       borderRadius: 'var(--radius)', padding: '10px 16px',
                       marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px',
                     }}>
-                      <span style={{ fontSize: '1.2rem' }}>🔴</span>
+                      <Icon name="x" size={16} style={{ color: '#ff3b30' }} />
                       <span style={{ fontWeight: 700, color: '#ff3b30', fontFamily: 'Prompt, sans-serif' }}>
                         สินค้าชิ้นนี้ขายไปแล้ว
                       </span>
@@ -97,10 +131,85 @@ export default function ProductDetailPage() {
                     </div>
                   )}
 
-                  <h1 className="product-detail-title font-display"
-                    style={{ opacity: product.status === 'sold' ? 0.7 : 1 }}>
-                    {product.name}
-                  </h1>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+                    <h1 className="product-detail-title font-display"
+                      style={{ opacity: product.status === 'sold' ? 0.7 : 1, flex: 1 }}>
+                      {product.name}
+                    </h1>
+
+                    {/* Action buttons */}
+                    <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                      {/* Favorite button */}
+                      <button
+                        onClick={() => toggleFavorite(product)}
+                        className={`fav-btn ${liked ? 'fav-btn--active' : ''}`}
+                        style={{ position: 'static', width: '40px', height: '40px' }}
+                        aria-label={liked ? 'ลบออกจากรายการโปรด' : 'เพิ่มรายการโปรด'}
+                      >
+                        <Icon name={liked ? 'heartFilled' : 'heart'} size={18} />
+                      </button>
+
+                      {/* Share button */}
+                      <div style={{ position: 'relative' }}>
+                        <button
+                          onClick={() => setShowShareMenu(!showShareMenu)}
+                          className="fav-btn"
+                          style={{ position: 'static', width: '40px', height: '40px' }}
+                          aria-label="แชร์สินค้า"
+                        >
+                          <Icon name="share" size={18} />
+                        </button>
+
+                        {/* Share dropdown */}
+                        {showShareMenu && (
+                          <>
+                            <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={() => setShowShareMenu(false)} />
+                            <div style={{
+                              position: 'absolute', top: '48px', right: 0,
+                              background: 'var(--bg-card)', border: '1px solid var(--border)',
+                              borderRadius: 'var(--radius-lg)', padding: '8px',
+                              boxShadow: 'var(--shadow-lg)', zIndex: 9999,
+                              minWidth: '160px',
+                            }}>
+                              <button onClick={handleShare} style={{
+                                width: '100%', padding: '10px 12px', textAlign: 'left',
+                                background: 'none', border: 'none', cursor: 'pointer',
+                                fontFamily: 'Prompt, sans-serif', fontSize: '0.85rem',
+                                color: 'var(--fg)', borderRadius: 'var(--radius)',
+                                display: 'flex', alignItems: 'center', gap: '8px',
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-secondary)'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                              >
+                                <Icon name="share" size={16} />
+                                คัดลอกลิงก์
+                              </button>
+                              <a
+                                href={`https://www.instagram.com/sell_second_hand_clothes.th`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => setShowShareMenu(false)}
+                                style={{
+                                  width: '100%', padding: '10px 12px', textAlign: 'left',
+                                  background: 'none', border: 'none', cursor: 'pointer',
+                                  fontFamily: 'Prompt, sans-serif', fontSize: '0.85rem',
+                                  color: 'var(--fg)', borderRadius: 'var(--radius)',
+                                  display: 'flex', alignItems: 'center', gap: '8px',
+                                  textDecoration: 'none',
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-secondary)'}
+                                onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                              >
+                                <Icon name="instagram" size={16} />
+                                ส่งทาง IG
+                              </a>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
                   {product.code && (
                     <p style={{ fontSize: '0.8rem', color: 'var(--fg-muted)', marginBottom: '8px', fontFamily: 'Prompt, sans-serif' }}>
                       รหัสสินค้า: <strong>{product.code}</strong>
@@ -111,6 +220,27 @@ export default function ProductDetailPage() {
                       ? <s style={{ opacity: 0.5 }}>฿{Number(product.price).toLocaleString()}</s>
                       : `฿${Number(product.price).toLocaleString()}`}
                   </p>
+
+                  {/* Size + Size Guide */}
+                  {product.size && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                      <span className="size-badge" style={{ fontSize: '0.85rem', padding: '4px 12px' }}>
+                        ไซส์ {product.size}
+                      </span>
+                      <button
+                        onClick={() => setShowSizeGuide(true)}
+                        style={{
+                          background: 'none', border: 'none', cursor: 'pointer',
+                          fontFamily: 'Prompt, sans-serif', fontSize: '0.8rem',
+                          color: '#cc2366', display: 'flex', alignItems: 'center', gap: '4px',
+                          textDecoration: 'underline', textUnderlineOffset: '3px',
+                        }}
+                      >
+                        <Icon name="ruler" size={14} />
+                        คู่มือไซส์
+                      </button>
+                    </div>
+                  )}
 
                   <hr className="product-detail-divider" />
 
@@ -125,7 +255,7 @@ export default function ProductDetailPage() {
                     {product.status === 'sold' ? (
                       <>
                         <p style={{ fontSize: '0.9rem', color: 'var(--fg-muted)', fontFamily: 'Prompt, sans-serif', textAlign: 'center', padding: '16px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius)' }}>
-                          😢 สินค้านี้ขายไปแล้ว แต่ยังมีสินค้าดีๆ อีกเยอะ!
+                          สินค้านี้ขายไปแล้ว แต่ยังมีสินค้าดีๆ อีกเยอะ!
                         </p>
                         <a href="https://www.instagram.com/sell_second_hand_clothes.th"
                           target="_blank" rel="noopener noreferrer"
@@ -137,7 +267,7 @@ export default function ProductDetailPage() {
                     ) : (
                       <>
                         <p style={{ fontSize: '0.8rem', color: 'var(--fg-muted)', fontFamily: 'Prompt, sans-serif' }}>
-                          📩 สนใจสินค้าชิ้นนี้? DM มาได้เลย!
+                          สนใจสินค้าชิ้นนี้? DM มาได้เลย!
                         </p>
                         {/* Add to Cart */}
                         <button
@@ -151,7 +281,8 @@ export default function ProductDetailPage() {
                           className={`btn btn-full btn-lg ${isInCart(product.id) ? 'btn-outline' : 'btn-secondary'}`}
                           style={{ gap: '10px', fontFamily: 'Prompt, sans-serif' }}
                         >
-                          {isInCart(product.id) ? '✓ อยู่ในตะกร้าแล้ว' : '🛒 ใส่ตะกร้า'}
+                          <Icon name={isInCart(product.id) ? 'check' : 'bag'} size={18} />
+                          {isInCart(product.id) ? 'อยู่ในตะกร้าแล้ว' : 'ใส่ตะกร้า'}
                         </button>
                         <a
                           id="contact-ig"
@@ -160,17 +291,14 @@ export default function ProductDetailPage() {
                           className="btn btn-primary btn-lg btn-full"
                           style={{ gap: '10px', fontFamily: 'Prompt, sans-serif' }}
                         >
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                            <circle cx="12" cy="12" r="4"/>
-                            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" strokeWidth="0"/>
-                          </svg>
+                          <Icon name="instagram" size={20} />
                           DM สั่งซื้อผ่าน Instagram
                         </a>
                       </>
                     )}
                     <Link href="/" className="btn btn-ghost btn-full">
-                      ← ดูสินค้าอื่น
+                      <Icon name="arrowRight" size={16} style={{ transform: 'rotate(180deg)' }} />
+                      ดูสินค้าอื่น
                     </Link>
                   </div>
                 </div>

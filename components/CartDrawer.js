@@ -1,6 +1,7 @@
 'use client';
 import { useCart } from '@/contexts/CartContext';
 import { useEffect, useRef } from 'react';
+import Icon from './Icon';
 
 const IG_URL = 'https://www.instagram.com/sell_second_hand_clothes.th';
 
@@ -34,7 +35,7 @@ export default function CartDrawer() {
     return (
       `สวัสดีครับ สนใจสั่งซื้อ ${cart.length} รายการครับ:\n` +
       lines.join('\n') +
-      `\n\nยอดรวม: ฿${total.toLocaleString()} บาท\nรบกวนสอบถามราคาและนัดรับได้เลยนะครับ 🙏`
+      `\n\nยอดรวม: ฿${total.toLocaleString()} บาท\nรบกวนสอบถามราคาและนัดรับได้เลยนะครับ`
     );
   };
 
@@ -56,7 +57,7 @@ export default function CartDrawer() {
         aria-label="ตะกร้าสินค้า"
         id="cart-fab"
       >
-        🛍️
+        <Icon name="shoppingCart" size={22} />
         {cart.length > 0 && (
           <span className="cart-fab-badge">{cart.length}</span>
         )}
@@ -69,15 +70,27 @@ export default function CartDrawer() {
       <aside ref={drawerRef} className={`cart-drawer ${open ? 'cart-drawer--open' : ''}`}>
         {/* Header */}
         <div className="cart-drawer-header">
-          <h2 className="cart-drawer-title">🛍️ ตะกร้าสินค้า</h2>
-          <button onClick={() => setOpen(false)} className="cart-drawer-close" aria-label="ปิด">✕</button>
+          <h2 className="cart-drawer-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Icon name="shoppingCart" size={20} />
+            ตะกร้าสินค้า
+          </h2>
+          <button onClick={() => setOpen(false)} className="cart-drawer-close" aria-label="ปิด">
+            <Icon name="x" size={16} />
+          </button>
         </div>
 
         {/* Items */}
         <div className="cart-drawer-body">
           {cart.length === 0 ? (
             <div className="cart-empty">
-              <div style={{ fontSize: '3rem', marginBottom: '12px' }}>🛒</div>
+              <div style={{
+                width: '64px', height: '64px', borderRadius: '50%',
+                background: 'var(--bg-secondary)', border: '2px dashed var(--border)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                marginBottom: '16px', color: 'var(--fg-muted)',
+              }}>
+                <Icon name="shoppingCart" size={28} />
+              </div>
               <p style={{ color: 'var(--fg-muted)', fontFamily: 'Prompt, sans-serif' }}>
                 ยังไม่มีสินค้าในตะกร้า<br />
                 กดปุ่ม "ใส่ตะกร้า" ที่สินค้าที่สนใจได้เลย!
@@ -105,7 +118,9 @@ export default function CartDrawer() {
                     onClick={() => removeFromCart(p.id)}
                     className="cart-item-remove"
                     aria-label="ลบออกจากตะกร้า"
-                  >✕</button>
+                  >
+                    <Icon name="x" size={14} />
+                  </button>
                 </div>
               ))}
 
@@ -117,8 +132,9 @@ export default function CartDrawer() {
 
               {/* Message Preview */}
               <div className="cart-msg-preview">
-                <p style={{ fontSize: '0.7rem', color: 'var(--fg-muted)', marginBottom: '6px', fontFamily: 'Prompt, sans-serif' }}>
-                  📋 ข้อความที่จะส่งไป IG:
+                <p style={{ fontSize: '0.7rem', color: 'var(--fg-muted)', marginBottom: '6px', fontFamily: 'Prompt, sans-serif', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Icon name="chatBubble" size={12} />
+                  ข้อความที่จะส่งไป IG:
                 </p>
                 <pre className="cart-msg-text">{buildMessage()}</pre>
               </div>
@@ -130,15 +146,12 @@ export default function CartDrawer() {
         {cart.length > 0 && (
           <div className="cart-drawer-footer">
             <button onClick={handleOrder} className="btn btn-primary btn-full btn-lg" style={{ gap: '10px', fontFamily: 'Prompt, sans-serif' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                <circle cx="12" cy="12" r="4"/>
-                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" strokeWidth="0"/>
-              </svg>
-              คัดลอก &amp; เปิด IG สั่งซื้อ!
+              <Icon name="instagram" size={20} />
+              คัดลอก & เปิด IG สั่งซื้อ!
             </button>
-            <button onClick={clearCart} className="btn btn-ghost btn-sm btn-full" style={{ marginTop: '8px', fontFamily: 'Prompt, sans-serif' }}>
-              🗑️ ล้างตะกร้า
+            <button onClick={clearCart} className="btn btn-ghost btn-sm btn-full" style={{ marginTop: '8px', fontFamily: 'Prompt, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+              <Icon name="trash" size={14} />
+              ล้างตะกร้า
             </button>
           </div>
         )}

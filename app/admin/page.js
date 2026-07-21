@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { getProducts, deleteProduct, updateProduct, batchUpdateOrder } from '@/lib/firestore';
+import Icon from '@/components/Icon';
 
 const STATUS_CONFIG = {
   available: { label: 'ขายอยู่',  color: '#34c759', bg: 'rgba(52,199,89,0.12)'  },
@@ -97,7 +98,7 @@ export default function AdminDashboard() {
 
       {/* ─── Header ─── */}
       <div className="admin-header">
-        <h1 className="admin-title" style={{ fontFamily: 'Prompt, sans-serif' }}>📦 จัดการสินค้า</h1>
+        <h1 className="admin-title" style={{ fontFamily: 'Prompt, sans-serif' }}>จัดการสินค้า</h1>
         <Link href="/admin/new" id="add-product-btn" className="btn btn-primary">
           + เพิ่มสินค้า
         </Link>
@@ -106,35 +107,35 @@ export default function AdminDashboard() {
       {/* ─── Stats Cards ─── */}
       <div className="stat-grid">
         <div className="stat-card">
-          <span className="stat-icon">📦</span>
+          <span className="stat-icon" style={{ color: 'var(--fg)' }}><Icon name="box" size={20} /></span>
           <div>
             <div className="stat-num">{total}</div>
             <div className="stat-label">สินค้าทั้งหมด</div>
           </div>
         </div>
         <div className="stat-card stat-card--green" onClick={() => setFilter(filterStatus === 'available' ? 'all' : 'available')} style={{ cursor: 'pointer' }}>
-          <span className="stat-icon">🟢</span>
+          <span className="stat-icon" style={{ color: '#34c759' }}><Icon name="circleDot" size={20} /></span>
           <div>
             <div className="stat-num">{available}</div>
             <div className="stat-label">ขายอยู่</div>
           </div>
         </div>
         <div className="stat-card stat-card--red" onClick={() => setFilter(filterStatus === 'sold' ? 'all' : 'sold')} style={{ cursor: 'pointer' }}>
-          <span className="stat-icon">🔴</span>
+          <span className="stat-icon" style={{ color: '#ff3b30' }}><Icon name="x" size={20} /></span>
           <div>
             <div className="stat-num">{sold}</div>
             <div className="stat-label">ขายแล้ว</div>
           </div>
         </div>
         <div className="stat-card stat-card--orange" onClick={() => setFilter(filterStatus === 'draft' ? 'all' : 'draft')} style={{ cursor: 'pointer' }}>
-          <span className="stat-icon">📝</span>
+          <span className="stat-icon" style={{ color: '#ff9500' }}><Icon name="pencil" size={20} /></span>
           <div>
             <div className="stat-num">{draft}</div>
             <div className="stat-label">ฉบับร่าง</div>
           </div>
         </div>
         <div className="stat-card stat-card--blue">
-          <span className="stat-icon">💰</span>
+          <span className="stat-icon" style={{ color: '#007aff' }}><Icon name="coins" size={20} /></span>
           <div>
             <div className="stat-num" style={{ fontSize: '1.1rem' }}>฿{totalValue.toLocaleString()}</div>
             <div className="stat-label">มูลค่าสินค้าคงเหลือ</div>
@@ -149,12 +150,12 @@ export default function AdminDashboard() {
             {['all', 'available', 'sold', 'draft'].map(s => (
               <button key={s} onClick={() => setFilter(s)}
                 className={`btn btn-sm ${filterStatus === s ? 'btn-primary' : 'btn-ghost'}`}>
-                {s === 'all' ? 'ทั้งหมด' : s === 'available' ? '🟢 ขายอยู่' : s === 'sold' ? '🔴 ขายแล้ว' : '📝 ร่าง'}
+                {s === 'all' ? 'ทั้งหมด' : s === 'available' ? 'ขายอยู่' : s === 'sold' ? 'ขายแล้ว' : 'ร่าง'}
               </button>
             ))}
           </div>
           <span style={{ fontSize: '0.75rem', color: 'var(--fg-muted)', fontFamily: 'Prompt, sans-serif' }}>
-            ↕️ ลากแถวเพื่อเรียงลำดับ{savingOrder ? ' (กำลังบันทึก…)' : ''}
+            ลากแถวเพื่อเรียงลำดับ{savingOrder ? ' (กำลังบันทึก...)' : ''}
           </span>
         </div>
       )}
@@ -168,7 +169,7 @@ export default function AdminDashboard() {
         </div>
       ) : displayed.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-state-icon">📦</div>
+          <div className="empty-state-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="box" size={32} /></div>
           <h2 className="empty-state-title">ไม่มีสินค้าในหมวดนี้</h2>
           <p className="empty-state-desc">เลือกหมวดอื่น หรือเพิ่มสินค้าใหม่</p>
           <Link href="/admin/new" className="btn btn-primary" style={{ marginTop: '16px', display: 'inline-flex' }}>
