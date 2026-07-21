@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Icon from '@/components/Icon';
 import Link from 'next/link';
+import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 import { FadeInUp, ScrollReveal, StaggerContainer, StaggerItem } from '@/components/MotionWrapper';
 
 const STEPS = [
@@ -16,7 +17,7 @@ const STEPS = [
   {
     icon: 'instagram',
     title: 'DM มาที่ Instagram ร้าน',
-    desc: 'ทักมาที่ @sell_second_hand_clothes.th บอกรหัสสินค้า (เช่น S1, S5) หรือแนบรูปสินค้าที่สนใจ',
+    desc: 'ทักมาที่ @ บอกรหัสสินค้า (เช่น S1, S5) หรือแนบรูปสินค้าที่สนใจ',
     color: '#cc2366',
   },
   {
@@ -68,6 +69,7 @@ const FAQS = [
 
 export default function HowToOrderPage() {
   const [openFaq, setOpenFaq] = useState(null);
+  const { settings } = useSiteSettings();
 
   return (
     <>
@@ -163,7 +165,7 @@ export default function HowToOrderPage() {
                 ทักมาที่ Instagram ร้านได้เลย แอดมินตอบไว
               </p>
               <motion.a
-                href="https://www.instagram.com/sell_second_hand_clothes.th"
+                href={`https://www.instagram.com/${settings.igUsername}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-ig-hero"
@@ -173,8 +175,8 @@ export default function HowToOrderPage() {
               >
                 <span className="btn-ig-icon"><Icon name="instagram" size={20} /></span>
                 <span className="btn-ig-text">
-                  <span className="btn-ig-main">DM สั่งซื้อเลย</span>
-                  <span className="btn-ig-sub">@sell_second_hand_clothes.th</span>
+                  <span className="btn-ig-main">{settings.igCtaText}</span>
+                  <span className="btn-ig-sub">@{settings.igUsername}</span>
                 </span>
               </motion.a>
             </motion.div>

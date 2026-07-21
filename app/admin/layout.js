@@ -18,6 +18,7 @@ export default function AdminLayout({ children }) {
     { href: '/admin',               label: 'สินค้าทั้งหมด',       icon: 'box'       },
     { href: '/admin/new',           label: 'เพิ่มสินค้า',         icon: 'plus'      },
     { href: '/admin/announcements', label: 'ประกาศ / แบนเนอร์', icon: 'megaphone' },
+    { href: '/admin/settings',      label: 'แก้ไขเนื้อหาเว็บ',    icon: 'pencil'    },
     { href: '/',                    label: 'ดูหน้าเว็บหลัก',   icon: 'globe'     },
   ];
 

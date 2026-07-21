@@ -3,12 +3,13 @@ import { useCart } from '@/contexts/CartContext';
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from './Icon';
-
-const IG_URL = 'https://www.instagram.com/sell_second_hand_clothes.th';
+import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 
 export default function CartDrawer() {
   const { cart, open, setOpen, removeFromCart, clearCart, total } = useCart();
+  const { settings } = useSiteSettings();
   const drawerRef = useRef(null);
+  const IG_URL = `https://www.instagram.com/${settings.igUsername}`;
 
   // Close on outside click
   useEffect(() => {

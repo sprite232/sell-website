@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Icon from '@/components/Icon';
 import Link from 'next/link';
+import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 import { FadeInUp, ScrollReveal, StaggerContainer, StaggerItem } from '@/components/MotionWrapper';
 
 const VALUES = [
@@ -33,6 +34,8 @@ const VALUES = [
 ];
 
 export default function AboutPage() {
+  const { settings } = useSiteSettings();
+
   return (
     <>
       <Navbar />
@@ -74,7 +77,7 @@ export default function AboutPage() {
               border: '1px solid var(--border)',
             }}>
               <h2 style={{ fontFamily: 'Prompt, sans-serif', fontSize: '1.2rem', fontWeight: 700, marginBottom: '16px' }}>
-                ทำไมต้อง Su Sell?
+                ทำไมต้อง {settings.siteName}?
               </h2>
               <p style={{
                 fontFamily: 'Prompt, sans-serif',
@@ -83,8 +86,7 @@ export default function AboutPage() {
                 lineHeight: 1.8,
                 marginBottom: '16px',
               }}>
-                เราเชื่อว่าเสื้อผ้าแบรนด์เนมไม่จำเป็นต้องราคาแพงเสมอไป
-                สินค้ามือสองคุณภาพดี ราคาเป็นกันเอง ช่วยให้ทุกคนเข้าถึงแบรนด์ที่รักได้
+                {settings.aboutStory1}
               </p>
               <p style={{
                 fontFamily: 'Prompt, sans-serif',
@@ -92,8 +94,7 @@ export default function AboutPage() {
                 color: 'var(--fg-secondary)',
                 lineHeight: 1.8,
               }}>
-                ทุกชิ้นผ่านการตรวจสอบอย่างละเอียด เราบอกรายละเอียดและตำหนิอย่างชัดเจน
-                เพื่อให้ลูกค้ามั่นใจว่าจะได้รับสินค้าที่ตรงตามความคาดหวัง
+                {settings.aboutStory2}
               </p>
             </div>
           </ScrollReveal>
@@ -180,9 +181,9 @@ export default function AboutPage() {
                     ค่าส่ง
                   </h4>
                   <ul style={{ fontFamily: 'Prompt, sans-serif', fontSize: '0.85rem', color: 'var(--fg-secondary)', lineHeight: 1.8, paddingLeft: '20px' }}>
-                    <li>กรุงเทพ: 35-50 บาท</li>
-                    <li>ต่างจังหวัด: 50-80 บาท</li>
-                    <li>/free shipping สำหรับยอดสั่งซื้อ 1,000 บาทขึ้นไป</li>
+                    <li>กรุงเทพ: {settings.shippingBangkok}</li>
+                    <li>ต่างจังหวัด: {settings.shippingUpcountry}</li>
+                    <li>Free shipping สำหรับยอดสั่งซื้อ {settings.shippingFreeThreshold} ขึ้นไป</li>
                   </ul>
                 </div>
                 <div>
@@ -190,8 +191,8 @@ export default function AboutPage() {
                     เวลาจัดส่ง
                   </h4>
                   <ul style={{ fontFamily: 'Prompt, sans-serif', fontSize: '0.85rem', color: 'var(--fg-secondary)', lineHeight: 1.8, paddingLeft: '20px' }}>
-                    <li>กรุงเทพ: 1-2 วัน</li>
-                    <li>ต่างจังหวัด: 2-3 วัน</li>
+                    <li>กรุงเทพ: {settings.shippingBangkokTime}</li>
+                    <li>ต่างจังหวัด: {settings.shippingUpcountryTime}</li>
                     <li>หลังโอนเงินยืนยัน</li>
                   </ul>
                 </div>
@@ -267,7 +268,7 @@ export default function AboutPage() {
               </p>
               <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <motion.a
-                  href="https://www.instagram.com/sell_second_hand_clothes.th"
+                  href={`https://www.instagram.com/${settings.igUsername}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-primary"
@@ -279,7 +280,7 @@ export default function AboutPage() {
                   Instagram
                 </motion.a>
                 <motion.a
-                  href="https://line.me/ti/p/~@sellsecondhand"
+                  href={`https://line.me/ti/p/~${settings.lineUsername}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-outline"

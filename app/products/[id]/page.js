@@ -11,6 +11,7 @@ import { getProduct } from '@/lib/firestore';
 import { useCart } from '@/contexts/CartContext';
 import { useFavorites } from '@/contexts/FavoritesContext';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
+import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 import { FadeInUp, FadeInLeft, FadeInRight, ScrollReveal, StaggerContainer, StaggerItem } from '@/components/MotionWrapper';
 
 export default function ProductDetailPage() {
@@ -23,6 +24,7 @@ export default function ProductDetailPage() {
   const { addToCart, isInCart } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
   const { recentlyViewed, addRecentlyViewed } = useRecentlyViewed();
+  const { settings } = useSiteSettings();
 
   useEffect(() => {
     if (!id) return;
@@ -264,7 +266,7 @@ export default function ProductDetailPage() {
                                       คัดลอกลิงก์
                                     </motion.button>
                                     <a
-                                      href={`https://www.instagram.com/sell_second_hand_clothes.th`}
+                                      href={`https://www.instagram.com/${settings.igUsername}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       onClick={() => setShowShareMenu(false)}
@@ -365,7 +367,7 @@ export default function ProductDetailPage() {
                             <p style={{ fontSize: '0.9rem', color: 'var(--fg-muted)', fontFamily: 'Prompt, sans-serif', textAlign: 'center', padding: '16px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius)' }}>
                               สินค้านี้ขายไปแล้ว แต่ยังมีสินค้าดีๆ อีกเยอะ!
                             </p>
-                            <motion.a href="https://www.instagram.com/sell_second_hand_clothes.th"
+                            <motion.a href={`https://www.instagram.com/${settings.igUsername}`}
                               target="_blank" rel="noopener noreferrer"
                               className="btn btn-outline btn-full"
                               style={{ gap: '8px', fontFamily: 'Prompt, sans-serif' }}
@@ -399,7 +401,7 @@ export default function ProductDetailPage() {
                             </motion.button>
                             <motion.a
                               id="contact-ig"
-                              href="https://www.instagram.com/sell_second_hand_clothes.th"
+                              href={`https://www.instagram.com/${settings.igUsername}`}
                               target="_blank" rel="noopener noreferrer"
                               className="btn btn-primary btn-lg btn-full"
                               style={{ gap: '10px', fontFamily: 'Prompt, sans-serif' }}

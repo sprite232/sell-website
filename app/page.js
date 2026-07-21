@@ -8,6 +8,7 @@ import BackToTop from '@/components/BackToTop';
 import Icon from '@/components/Icon';
 import { getProducts, getActiveAnnouncements } from '@/lib/firestore';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
+import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 import {
   FadeInUp,
   FadeInLeft,
@@ -28,6 +29,7 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [annIdx, setAnnIdx]           = useState(0);
   const { recentlyViewed } = useRecentlyViewed();
+  const { settings } = useSiteSettings();
 
   useEffect(() => {
     Promise.all([getProducts(), getActiveAnnouncements()])
@@ -127,41 +129,40 @@ export default function HomePage() {
                       className="hero-chip hero-chip--pink"
                       whileHover={{ scale: 1.05, y: -2 }}
                     >
-                      <Icon name="badgeCheck" size={14} /> ของแท้ 100%
+                      <Icon name="badgeCheck" size={14} /> {settings.heroChip1}
                     </motion.span>
                     <motion.span
                       className="hero-chip hero-chip--blue"
                       whileHover={{ scale: 1.05, y: -2 }}
                     >
-                      <Icon name="tag" size={14} /> มือ 1-2
+                      <Icon name="tag" size={14} /> {settings.heroChip2}
                     </motion.span>
                     <motion.span
                       className="hero-chip hero-chip--green"
                       whileHover={{ scale: 1.05, y: -2 }}
                     >
-                      <Icon name="coins" size={14} /> ราคาดี
+                      <Icon name="coins" size={14} /> {settings.heroChip3}
                     </motion.span>
                   </div>
                 </FadeInUp>
 
                 <FadeInUp delay={0.2}>
                   <h1 className="hero-title-casual">
-                    Su Sell<br />
-                    <span className="hero-title-accent">Second hand</span>
+                    {settings.heroTitle}<br />
+                    <span className="hero-title-accent">{settings.heroTitleAccent}</span>
                   </h1>
                 </FadeInUp>
 
                 <FadeInUp delay={0.3}>
-                  <p className="hero-subtitle-casual">
-                    เสื้อผ้าคัดสรรมาดีๆ ของแท้ทุกชิ้น<br />
-                    ถามก่อนได้เลย ไม่กัด — DM มาเลย!
+                  <p className="hero-subtitle-casual" style={{ whiteSpace: 'pre-line' }}>
+                    {settings.heroSubtitle}
                   </p>
                 </FadeInUp>
 
                 <FadeInUp delay={0.4}>
                   <PulseGlow>
                     <motion.a
-                      href="https://www.instagram.com/sell_second_hand_clothes.th"
+                      href={`https://www.instagram.com/${settings.igUsername}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn-ig-hero"
@@ -173,8 +174,8 @@ export default function HomePage() {
                         <Icon name="instagram" size={22} />
                       </span>
                       <span className="btn-ig-text">
-                        <span className="btn-ig-main">DM สั่งซื้อเลย</span>
-                        <span className="btn-ig-sub">@sell_second_hand_clothes.th</span>
+                        <span className="btn-ig-main">{settings.igCtaText}</span>
+                        <span className="btn-ig-sub">@{settings.igUsername}</span>
                       </span>
                       <motion.span
                         className="btn-ig-arrow"
@@ -195,29 +196,29 @@ export default function HomePage() {
                     <div className="logo-3d-wrapper">
                       <div className="logo-3d-spin">
                         <div className="logo-3d-front">
-                          <img src="/logo.png" alt="Su Sell Second hand" className="logo-img" />
+                          <img src={settings.logoUrl} alt={settings.siteName} className="logo-img" />
                         </div>
                         <div className="logo-3d-back">
-                          <img src="/logo.png" alt="Su Sell Second hand" className="logo-img logo-img-back" />
+                          <img src={settings.logoUrl} alt={settings.siteName} className="logo-img logo-img-back" />
                         </div>
                       </div>
                       <motion.div
                         className="logo-badge logo-badge-1"
                         whileHover={{ scale: 1.1 }}
                       >
-                        ของแท้
+                        {settings.badge1}
                       </motion.div>
                       <motion.div
                         className="logo-badge logo-badge-2"
                         whileHover={{ scale: 1.1 }}
                       >
-                        มือ 1-2
+                        {settings.badge2}
                       </motion.div>
                       <motion.div
                         className="logo-badge logo-badge-3"
                         whileHover={{ scale: 1.1 }}
                       >
-                        DM ได้เลย
+                        {settings.badge3}
                       </motion.div>
                     </div>
                   </Floating>
@@ -240,12 +241,12 @@ export default function HomePage() {
                     <Icon name="instagram" size={24} />
                   </motion.div>
                   <div>
-                    <p className="ig-strip-name">@sell_second_hand_clothes.th</p>
+                    <p className="ig-strip-name">@{settings.igUsername}</p>
                     <p className="ig-strip-desc">ทักมาได้เลย ตอบไว ไม่ต้องรอนาน</p>
                   </div>
                 </div>
                 <motion.a
-                  href="https://www.instagram.com/sell_second_hand_clothes.th"
+                  href={`https://www.instagram.com/${settings.igUsername}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="ig-strip-btn"
@@ -489,10 +490,10 @@ export default function HomePage() {
               {/* Brand */}
               <div>
                 <h3 style={{ fontFamily: 'Prompt, sans-serif', fontSize: '1rem', fontWeight: 700, marginBottom: '8px' }}>
-                  Su Sell Second hand
+                  {settings.siteName}
                 </h3>
                 <p style={{ fontFamily: 'Prompt, sans-serif', fontSize: '0.8rem', color: 'var(--fg-muted)', lineHeight: 1.6 }}>
-                  เสื้อผ้ามือสองแบรนด์เนมของแท้ คัดสรรมาอย่างดี
+                  {settings.footerAbout}
                 </p>
               </div>
 
@@ -521,24 +522,24 @@ export default function HomePage() {
                 </h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <motion.a
-                    href="https://www.instagram.com/sell_second_hand_clothes.th"
+                    href={`https://www.instagram.com/${settings.igUsername}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ fontFamily: 'Prompt, sans-serif', fontSize: '0.8rem', color: 'var(--fg-muted)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}
                     whileHover={{ color: '#cc2366' }}
                   >
                     <Icon name="instagram" size={14} />
-                    @sell_second_hand_clothes.th
+                    @{settings.igUsername}
                   </motion.a>
                   <motion.a
-                    href="https://line.me/ti/p/~@sellsecondhand"
+                    href={`https://line.me/ti/p/~${settings.lineUsername}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ fontFamily: 'Prompt, sans-serif', fontSize: '0.8rem', color: 'var(--fg-muted)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}
                     whileHover={{ color: '#06c755' }}
                   >
                     <Icon name="line" size={14} />
-                    @sellsecondhand
+                    {settings.lineUsername}
                   </motion.a>
                 </div>
               </div>
@@ -553,9 +554,9 @@ export default function HomePage() {
               flexWrap: 'wrap',
               gap: '8px',
             }}>
-              <span className="footer-copy">© 2026 Su Sell Second hand</span>
+              <span className="footer-copy">{settings.footerCopyright}</span>
               <span style={{ fontFamily: 'Prompt, sans-serif', fontSize: '0.7rem', color: 'var(--fg-muted)' }}>
-                ของแท้ 100% | ราคาเป็นกันเอง | จัดส่งทั่วไทย
+                {settings.footerTagline}
               </span>
             </div>
           </div>

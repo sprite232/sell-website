@@ -2,6 +2,7 @@ import '../styles/globals.css';
 import { AuthProvider } from '@/hooks/useAuth';
 import { CartProvider } from '@/contexts/CartContext';
 import { FavoritesProvider } from '@/contexts/FavoritesContext';
+import { SiteSettingsProvider } from '@/contexts/SiteSettingsContext';
 import CartDrawer from '@/components/CartDrawer';
 import CursorGlow from '@/components/CursorGlow';
 import ClientLayout from '@/components/ClientLayout';
@@ -55,15 +56,17 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <AuthProvider>
-          <FavoritesProvider>
-            <CartProvider>
-              <CursorGlow />
-              <ClientLayout>
-                {children}
-              </ClientLayout>
-              <CartDrawer />
-            </CartProvider>
-          </FavoritesProvider>
+          <SiteSettingsProvider>
+            <FavoritesProvider>
+              <CartProvider>
+                <CursorGlow />
+                <ClientLayout>
+                  {children}
+                </ClientLayout>
+                <CartDrawer />
+              </CartProvider>
+            </FavoritesProvider>
+          </SiteSettingsProvider>
         </AuthProvider>
       </body>
     </html>

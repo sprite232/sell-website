@@ -4,9 +4,11 @@ import { motion } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
 import Icon from './Icon';
 import { useFavorites } from '@/contexts/FavoritesContext';
+import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 
 export default function Navbar() {
   const { favorites } = useFavorites();
+  const { settings } = useSiteSettings();
 
   return (
     <motion.nav
@@ -61,7 +63,7 @@ export default function Navbar() {
               <span className="ig-label">เกี่ยวกับเรา</span>
             </Link>
             <motion.a
-              href="https://www.instagram.com/sell_second_hand_clothes.th"
+              href={`https://www.instagram.com/${settings.igUsername}`}
               target="_blank"
               rel="noopener noreferrer"
               className="navbar-link"
