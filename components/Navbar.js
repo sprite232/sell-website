@@ -54,6 +54,12 @@ export default function Navbar() {
               </motion.div>
               <span className="ig-label">วิธีสั่งซื้อ</span>
             </Link>
+            <Link href="/about" className="navbar-link" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}>
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <Icon name="globe" size={16} />
+              </motion.div>
+              <span className="ig-label">เกี่ยวกับเรา</span>
+            </Link>
             <motion.a
               href="https://www.instagram.com/sell_second_hand_clothes.th"
               target="_blank"

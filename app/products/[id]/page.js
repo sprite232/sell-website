@@ -10,7 +10,8 @@ import SizeGuide from '@/components/SizeGuide';
 import { getProduct } from '@/lib/firestore';
 import { useCart } from '@/contexts/CartContext';
 import { useFavorites } from '@/contexts/FavoritesContext';
-import { FadeInUp, FadeInLeft, FadeInRight, ScrollReveal } from '@/components/MotionWrapper';
+import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
+import { FadeInUp, FadeInLeft, FadeInRight, ScrollReveal, StaggerContainer, StaggerItem } from '@/components/MotionWrapper';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -21,13 +22,17 @@ export default function ProductDetailPage() {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const { addToCart, isInCart } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { recentlyViewed, addRecentlyViewed } = useRecentlyViewed();
 
   useEffect(() => {
     if (!id) return;
     getProduct(id)
       .then((p) => {
         if (!p) setNotFound(true);
-        else setProduct(p);
+        else {
+          setProduct(p);
+          addRecentlyViewed(p);
+        }
       })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));

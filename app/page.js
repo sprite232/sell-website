@@ -1,11 +1,13 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import ProductCard from '@/components/ProductCard';
 import BackToTop from '@/components/BackToTop';
 import Icon from '@/components/Icon';
 import { getProducts, getActiveAnnouncements } from '@/lib/firestore';
+import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import {
   FadeInUp,
   FadeInLeft,
@@ -25,6 +27,7 @@ export default function HomePage() {
   const [activeSize, setActiveSize]   = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [annIdx, setAnnIdx]           = useState(0);
+  const { recentlyViewed } = useRecentlyViewed();
 
   useEffect(() => {
     Promise.all([getProducts(), getActiveAnnouncements()])
@@ -401,24 +404,159 @@ export default function HomePage() {
             )}
           </div>
         </section>
+
+        {/* Recently Viewed */}
+        {recentlyViewed.length > 0 && (
+          <ScrollReveal>
+            <section className="product-grid-section" style={{ paddingTop: 0 }}>
+              <div className="container">
+                <div className="section-header">
+                  <h2 className="section-title-casual" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Icon name="eye" size={20} style={{ opacity: 0.5 }} />
+                    เพิ่งดูไป
+                  </h2>
+                </div>
+                <StaggerContainer style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+                  gap: '16px',
+                }}>
+                  {recentlyViewed.slice(0, 4).map(item => (
+                    <StaggerItem key={item.id}>
+                      <motion.a
+                        href={`/products/${item.id}`}
+                        style={{
+                          display: 'block',
+                          background: 'var(--bg-card)',
+                          border: '1px solid var(--border)',
+                          borderRadius: 'var(--radius)',
+                          overflow: 'hidden',
+                          textDecoration: 'none',
+                          color: 'inherit',
+                        }}
+                        whileHover={{ y: -4, boxShadow: 'var(--shadow-md)' }}
+                      >
+                        {item.image ? (
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            style={{ width: '100%', aspectRatio: '1', objectFit: 'cover' }}
+                          />
+                        ) : (
+                          <div style={{
+                            width: '100%', aspectRatio: '1',
+                            background: 'var(--bg-secondary)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}>
+                            <Icon name="tag" size={24} style={{ opacity: 0.2 }} />
+                          </div>
+                        )}
+                        <div style={{ padding: '8px 10px' }}>
+                          <p style={{
+                            fontFamily: 'Prompt, sans-serif', fontSize: '0.75rem',
+                            fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}>
+                            {item.name}
+                          </p>
+                          <p style={{
+                            fontFamily: 'Prompt, sans-serif', fontSize: '0.7rem',
+                            color: 'var(--fg-muted)',
+                          }}>
+                            ฿{Number(item.price).toLocaleString()}
+                          </p>
+                        </div>
+                      </motion.a>
+                    </StaggerItem>
+                  ))}
+                </StaggerContainer>
+              </div>
+            </section>
+          </ScrollReveal>
+        )}
       </main>
 
       {/* Footer */}
       <ScrollReveal>
         <footer className="footer">
           <div className="container">
-            <div className="footer-inner">
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '32px',
+              marginBottom: '32px',
+            }}>
+              {/* Brand */}
+              <div>
+                <h3 style={{ fontFamily: 'Prompt, sans-serif', fontSize: '1rem', fontWeight: 700, marginBottom: '8px' }}>
+                  Su Sell Second hand
+                </h3>
+                <p style={{ fontFamily: 'Prompt, sans-serif', fontSize: '0.8rem', color: 'var(--fg-muted)', lineHeight: 1.6 }}>
+                  เสื้อผ้ามือสองแบรนด์เนมของแท้ คัดสรรมาอย่างดี
+                </p>
+              </div>
+
+              {/* Links */}
+              <div>
+                <h4 style={{ fontFamily: 'Prompt, sans-serif', fontSize: '0.85rem', fontWeight: 600, marginBottom: '12px' }}>
+                  ลิงก์ด่วน
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <Link href="/how-to-order" style={{ fontFamily: 'Prompt, sans-serif', fontSize: '0.8rem', color: 'var(--fg-muted)', textDecoration: 'none' }}>
+                    วิธีสั่งซื้อ
+                  </Link>
+                  <Link href="/about" style={{ fontFamily: 'Prompt, sans-serif', fontSize: '0.8rem', color: 'var(--fg-muted)', textDecoration: 'none' }}>
+                    เกี่ยวกับเรา
+                  </Link>
+                  <Link href="/favorites" style={{ fontFamily: 'Prompt, sans-serif', fontSize: '0.8rem', color: 'var(--fg-muted)', textDecoration: 'none' }}>
+                    รายการโปรด
+                  </Link>
+                </div>
+              </div>
+
+              {/* Contact */}
+              <div>
+                <h4 style={{ fontFamily: 'Prompt, sans-serif', fontSize: '0.85rem', fontWeight: 600, marginBottom: '12px' }}>
+                  ติดต่อเรา
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <motion.a
+                    href="https://www.instagram.com/sell_second_hand_clothes.th"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontFamily: 'Prompt, sans-serif', fontSize: '0.8rem', color: 'var(--fg-muted)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    whileHover={{ color: '#cc2366' }}
+                  >
+                    <Icon name="instagram" size={14} />
+                    @sell_second_hand_clothes.th
+                  </motion.a>
+                  <motion.a
+                    href="https://line.me/ti/p/~@sellsecondhand"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontFamily: 'Prompt, sans-serif', fontSize: '0.8rem', color: 'var(--fg-muted)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    whileHover={{ color: '#06c755' }}
+                  >
+                    <Icon name="line" size={14} />
+                    @sellsecondhand
+                  </motion.a>
+                </div>
+              </div>
+            </div>
+
+            <div style={{
+              borderTop: '1px solid var(--border)',
+              paddingTop: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '8px',
+            }}>
               <span className="footer-copy">© 2026 Su Sell Second hand</span>
-              <motion.a
-                href="https://www.instagram.com/sell_second_hand_clothes.th"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="footer-ig-link"
-                whileHover={{ scale: 1.05 }}
-              >
-                <Icon name="instagram" size={15} />
-                @sell_second_hand_clothes.th
-              </motion.a>
+              <span style={{ fontFamily: 'Prompt, sans-serif', fontSize: '0.7rem', color: 'var(--fg-muted)' }}>
+                ของแท้ 100% | ราคาเป็นกันเอง | จัดส่งทั่วไทย
+              </span>
             </div>
           </div>
         </footer>
